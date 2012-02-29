@@ -3,8 +3,8 @@
 Released under the AGPL3 license</p>             </td>             <td class="code">               <div class="highlight"><pre></pre></div>             </td>           </tr>                               <tr id="section-2">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-2">&#182;</a>               </div>               <h3>Overview</h3>
 
 <p>esl is modelled after Node.js' own httpServer and client.
-It offers two low-level ESL handlers, createClient() and
-createServer(), and a higher-level CallServer class.</p>
+It offers two ESL handlers, createClient() and
+createCallServer().</p>
 
 <p>For more information about ESL consult the FreeSwitch wiki
 <a href="http://wiki.freeswitch.org/wiki/Event_Socket">Event Socket</a></p>
@@ -63,31 +63,30 @@ fs_command "reloadxml"
    &lt;action application="socket" data="127.0.0.1:7000 async full"/&gt;
 to hand the call over to an ESL server.</p>
 
-<p>If you'd like to get realtime channel variables and synchronous commands, do</p>
+<p>If you'd like to get realtime channel variables after each command(),
+execute the "verbose_events" command first:</p>
 
 <pre><code>server = esl.createCallServer()
 
 server.on 'CONNECT', (call) -&gt;
   # "verbose_events" will send us channel data after each "command".
   call.command 'verbose_events', (call) -&gt;
-    # You may now access realtime variables from call.body
-    foo = call.body.variable_foo
-    # Wait for the command to finish.
-    call.command 'play-file', 'voicemail/vm-hello'
+    # command() will wait for the command to finish.
+    call.command 'play-file', 'voicemail/vm-hello', (call) -&gt;
+      # You may now access realtime variables from call.body
+      foo = call.body.variable_foo
 
 server.listen 7000
 </code></pre>
 
-<p>The asynchronous version of "command" is "execute".</p>
+<p>For some applications you might want to capture channel events instead
+of using the command() / callback pattern:</p>
 
-<p>An asynchronous server will look this way:</p>
-
-<pre><code>server = esl.createServer()
+<pre><code>server = esl.createCallServer()
 
 server.on 'CONNECT', (call) -&gt;
   uri = call.body.variable_sip_req_uri
 
-  # Other FreeSwitch channel events are available as well:
   call.on 'CHANNEL_ANSWER', (call) -&gt;
     util.log 'Call was answered'
   call.on 'CHANNEL_HANGUP_COMPLETE', (call) -&gt;
@@ -206,8 +205,8 @@ For example:</p>
     <span class="nx">@send</span> <span class="s2">&quot;sendevent #{event_name}&quot;</span><span class="p">,</span> <span class="nx">args</span><span class="p">,</span> <span class="nx">cb</span></pre></div>             </td>           </tr>                               <tr id="section-39">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-39">&#182;</a>               </div>               <p>Authenticate, typically used in a client:</p>
 
 <pre><code>client = esl.createClient()
-client.on 'esl_auth_request', -&gt;
-  @auth 'ClueCon', -&gt;
+client.on 'esl_auth_request', (call) -&gt;
+  call.auth 'ClueCon', -&gt;
     # Start sending other commands here.
 client.connect ...
 </code></pre>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nv">auth: </span><span class="nf">(password,cb)       -&gt;</span> <span class="nx">@send</span> <span class="s2">&quot;auth #{password}&quot;</span><span class="p">,</span> <span class="nx">cb</span></pre></div>             </td>           </tr>                               <tr id="section-40">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-40">&#182;</a>               </div>               <p>connect() and linger() are used in server mode.</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nv">connect: </span><span class="nf">(cb)             -&gt;</span> <span class="nx">@send</span> <span class="s2">&quot;connect&quot;</span><span class="p">,</span> <span class="nx">cb</span>    <span class="c1"># Outbound mode</span>
@@ -318,9 +317,7 @@ and assign unified event IDs to the ESL Content-Types.</p>             </td>    
       <span class="nx">socket</span><span class="p">.</span><span class="kc">on</span> <span class="s1">&#39;esl_connect&#39;</span><span class="p">,</span> <span class="nx">requestListener</span>
       <span class="nx">connectionListener</span> <span class="nx">socket</span>
 
-    <span class="k">super</span><span class="p">()</span></pre></div>             </td>           </tr>                               <tr id="section-60">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-60">&#182;</a>               </div>               <p>The callback will receive an eslResponse object.</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="nv">exports.createServer = </span><span class="nf">(requestListener) -&gt;</span> <span class="k">return</span> <span class="k">new</span> <span class="nx">eslServer</span><span class="p">(</span><span class="nx">requestListener</span><span class="p">)</span>
-
-<span class="nv">exports.createCallServer = </span><span class="o">-&gt;</span>
+    <span class="k">super</span><span class="p">()</span></pre></div>             </td>           </tr>                               <tr id="section-60">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-60">&#182;</a>               </div>               <p>The callback will receive an eslResponse object.</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="nv">exports.createCallServer = </span><span class="o">-&gt;</span>
   <span class="nv">server = </span><span class="k">new</span> <span class="nx">eslServer</span> <span class="nf">(call) -&gt;</span>
     <span class="nv">Unique_ID = </span><span class="s1">&#39;Unique-ID&#39;</span>
     <span class="nx">call</span><span class="p">.</span><span class="nx">connect</span> <span class="nf">(call) -&gt;</span>
