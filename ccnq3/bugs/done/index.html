@@ -1,0 +1,254 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+ "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>done</title>
+
+<link rel="stylesheet" href="../../style.css" type="text/css" />
+
+<link rel="stylesheet" href="../../local.css" type="text/css" />
+
+
+
+
+
+</head>
+<body>
+
+<div class="page">
+
+<div class="pageheader">
+<div class="header">
+<span>
+<span class="parentlinks">
+
+<a href="../../">CCNQ3</a>/ 
+
+<a href="../">bugs</a>/ 
+
+</span>
+<span class="title">
+done
+
+</span>
+</span>
+
+</div>
+
+
+
+
+
+</div>
+
+
+
+<div id="pagebody">
+
+<div id="content">
+<p>recently fixed <a href="../">bugs</a></p>
+
+<div  class="feedlink">
+
+
+</div>
+<div class="inlinepage">
+
+<div class="inlineheader">
+
+<span class="header">
+
+<a href="../4666_account_data_across_trust_boundaries/">4666 account data across trust boundaries</a>
+
+</span>
+</div>
+
+<div class="inlinecontent">
+<p>= Account transport accross trust boundaries =</p>
+
+<p><span class="selflink">done</span></p>
+
+<p>Implement transport of account identification across trust boundaries.</p>
+
+<p>The feature is being implemented as part of CCNQ3's outbound-proxy. This needs to be expedited so that Jim Gorman can work with faxback to deploy their multi-tenant solution while still using Sotel as the billing provider.</p>
+
+<p>Specification: the account information must be passed across the trust boundary. Current implementation would be to use a Request-URI parameter, "account", to carry the account. However more research is required to ensure there isn't a standard (RFC) way of doing this.</p>
+
+<p>Research:</p>
+
+<ul>
+<li><p>RFC5503 [ http://tools.ietf.org/html/rfc5503#page-14 ] specifies P-DCS-BILLING-INFO, however the header is complex and specific to PacketCable.</p></li>
+<li><p>P-Charge-Info is being specified [ http://blogs.voxeo.com/speakingofstandards/2008/05/13/p-charge-info-and-incredible-disconnect-between-pstn-billing-and-the-new-world-of-sip/ ] and [ http://tools.ietf.org/rfcmarkup?doc=draft-york-sipping-p-charge-info ].
+This is selected as the proper solution. (The P-Charge-Info header must be removed by the UA, not passed along.)</p></li>
+<li><p>A 403 response (rather than 407) should be used to indicate that, although the UAC was recognized as a trusted agent by the proxy, the account presented was not authorized for that UAC.</p></li>
+</ul>
+
+
+<p>Other options:</p>
+
+<ul>
+<li><p>RURI parameter (current implementation): not a good idea, URI parameters are IANA-registered;</p></li>
+<li><p>separate domain name for each end-user account; cons: requires additional code to handle DNS changes (need one new subdomain with SRV records per account);</p></li>
+<li><p>use the calling number (or P-Charge-Info URI) as the billing identifier -- requires to check that the calling number is registered; prevents wholesalers to use the mechanism.</p></li>
+</ul>
+
+
+</div>
+
+<div class="inlinefooter">
+
+<span class="pagedate">
+Posted <span class="date">Tue Jan 24 12:01:59 2012</span>
+</span>
+
+
+
+
+
+
+
+
+
+</div>
+
+</div>
+<div class="inlinepage">
+
+<div class="inlineheader">
+
+<span class="header">
+
+<a href="../3058_record_inbound_tier_in_cdr/">3058 record inbound tier in cdr</a>
+
+</span>
+</div>
+
+<div class="inlinecontent">
+<p>= Record inbound tier in CDR =</p>
+
+<p>We need new accounting for inbound calls so that we can record the inbound tier at the time the call record is created.</p>
+
+<p>Proposed solution:
+- inject account numbers (FQ, hence tiers) at the carrier-sbc (could also have routing done there in that case)
+  Update: this is the accepted solution, the "account" field should be used to track for example inbound tier.</p>
+
+<p><span class="selflink">done</span></p>
+
+</div>
+
+<div class="inlinefooter">
+
+<span class="pagedate">
+Posted <span class="date">Tue Jan 24 12:01:59 2012</span>
+</span>
+
+
+
+
+
+
+
+
+
+</div>
+
+</div>
+<div class="inlinepage">
+
+<div class="inlineheader">
+
+<span class="header">
+
+<a href="../4113_call_forward_3xx/">4113 call forward 3xx</a>
+
+</span>
+</div>
+
+<div class="inlinecontent">
+<p>= Bad gateway (Call Forwarding bug) =</p>
+
+<p>The issue is due to repeated IP in c=IN header (modified by
+OpenSIPS/MediaProxy).</p>
+
+<p>c=IN IP4 4.53.160.1374.53.160.137</p>
+
+<p>The idea is to do away with proxy forwarding and use redirection (30x) instead.</p>
+
+<p><span class="selflink">done</span></p>
+
+</div>
+
+<div class="inlinefooter">
+
+<span class="pagedate">
+Posted <span class="date">Tue Dec 27 11:46:28 2011</span>
+</span>
+
+
+
+
+
+
+
+
+
+</div>
+
+</div>
+
+
+
+
+
+</div>
+
+
+
+
+
+</div>
+
+<div id="footer" class="pagefooter">
+
+<div id="pageinfo">
+
+
+
+
+<div id="backlinks">
+Links:
+
+<a href="../3058_record_inbound_tier_in_cdr/">3058 record inbound tier in cdr</a>
+
+<a href="../4113_call_forward_3xx/">4113 call forward 3xx</a>
+
+<a href="../4666_account_data_across_trust_boundaries/">4666 account data across trust boundaries</a>
+
+<a href="../">bugs</a>
+
+
+</div>
+
+
+
+
+
+
+<div class="pagedate">
+Last edited <span class="date">Thu Aug 18 14:43:12 2011</span>
+<!-- Created <span class="date">Thu Aug 18 14:43:12 2011</span> -->
+</div>
+
+</div>
+
+
+<!-- from CCNQ3 -->
+</div>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,139 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+ "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>applications</title>
+
+<link rel="stylesheet" href="../../style.css" type="text/css" />
+
+<link rel="stylesheet" href="../../local.css" type="text/css" />
+
+
+
+
+
+</head>
+<body>
+
+<div class="page">
+
+<div class="pageheader">
+<div class="header">
+<span>
+<span class="parentlinks">
+
+<a href="../../">CCNQ3</a>/ 
+
+<a href="../">doc</a>/ 
+
+</span>
+<span class="title">
+applications
+
+</span>
+</span>
+
+</div>
+
+
+
+
+
+</div>
+
+
+
+<div id="pagebody">
+
+<div id="content">
+<p>The portal is available as a zappa application. The application should be called
+from your main HTML page; the minimal code to do this is:</p>
+
+<p>  
+    
+      
+      
+    
+    
+      <div id="content">
+        <div>
+          <div></div>
+          <div></div>
+          <div></div>
+        </div>
+      </div>
+      
+      
+    
+  </p>
+
+<p>You might use $.extra_login to add processing at login time, for example:</p>
+
+<p>  $(document).ready -&gt;</p>
+
+<pre><code>extra_login = $.extra_login
+$.extra_login = (auth,next) -&gt;
+  # Replicate any myportal record
+  myportal_replicate = (auth,next) -&gt;
+    auth.notify 'Replicating your portal data.'
+
+    options =
+      type: 'post'
+      url: '/roles/replicate/pull/myportal'
+      dataType:'json'
+      success: (data) -&gt;
+        if not data.ok
+          auth.notify 'Portal replication failed.'
+          return
+        auth.notify ''
+        next()
+
+    auth.$.ajax(options)
+
+if extra_login?
+  ##-- Make sure your code is ran last! --##
+  extra_login auth, -&gt; myportal_replicate auth, next
+else
+  myportal_replicate auth, next
+</code></pre>
+
+<p>Once the user is logged in, the code will redirect to _design/portal/index.js .</p>
+
+</div>
+
+
+
+
+
+</div>
+
+<div id="footer" class="pagefooter">
+
+<div id="pageinfo">
+
+
+
+
+
+
+
+
+
+<div class="pagedate">
+Last edited <span class="date">Fri Oct 28 11:53:47 2011</span>
+<!-- Created <span class="date">Fri Oct 28 11:53:47 2011</span> -->
+</div>
+
+</div>
+
+
+<!-- from CCNQ3 -->
+</div>
+
+</div>
+
+</body>
+</html>

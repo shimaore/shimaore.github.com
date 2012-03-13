@@ -1,0 +1,112 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+ "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>port-numbers</title>
+
+<link rel="stylesheet" href="../../style.css" type="text/css" />
+
+<link rel="stylesheet" href="../../local.css" type="text/css" />
+
+
+
+
+
+</head>
+<body>
+
+<div class="page">
+
+<div class="pageheader">
+<div class="header">
+<span>
+<span class="parentlinks">
+
+<a href="../../">CCNQ3</a>/ 
+
+<a href="../">doc</a>/ 
+
+</span>
+<span class="title">
+port-numbers
+
+</span>
+</span>
+
+</div>
+
+
+
+
+
+</div>
+
+
+
+<div id="pagebody">
+
+<div id="content">
+<p>Port assignments:</p>
+
+<p>These are required to be managed so that multiple services can be
+co-located.</p>
+
+<p>RTP ports:
+  MediaProxy:    40000:41998 (1000 sessions, up to 500 calls)
+  FeatureServer: 42000:42998 (500 sessions, up to 250 calls)
+  SBC+media:     43000:43998 (500 sessions, up to 250 calls)</p>
+
+<p>SIP ports (Sofia profiles):
+  The ports indicated are the external ports for SBC "ingress" profiles.
+  The internal "egress" profiles use port N+10000.</p>
+
+<p>  Normally use ports 5060, 5062, etc. for the carrier-SBCs.</p>
+
+<p>  FeatureServer:  5100</p>
+
+<p>  Cust SBC:     15200:15299 (internal -- towards customer proxy)
+                5200:5299 (external -- towards inbound/outbound proxy)</p>
+
+<p>  OpenSIPS:     5060 *</p>
+
+<p>Other ports:
+  MediaProxy  25060</p>
+
+</div>
+
+
+
+
+
+</div>
+
+<div id="footer" class="pagefooter">
+
+<div id="pageinfo">
+
+
+
+
+
+
+
+
+
+<div class="pagedate">
+Last edited <span class="date">Tue Jan 24 12:01:59 2012</span>
+<!-- Created <span class="date">Tue Jan 24 12:01:59 2012</span> -->
+</div>
+
+</div>
+
+
+<!-- from CCNQ3 -->
+</div>
+
+</div>
+
+</body>
+</html>

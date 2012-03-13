@@ -1,0 +1,211 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+ "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>README</title>
+
+<link rel="stylesheet" href="../style.css" type="text/css" />
+
+<link rel="stylesheet" href="../local.css" type="text/css" />
+
+
+
+
+
+</head>
+<body>
+
+<div class="page">
+
+<div class="pageheader">
+<div class="header">
+<span>
+<span class="parentlinks">
+
+<a href="../">CCNQ3</a>/ 
+
+</span>
+<span class="title">
+README
+
+</span>
+</span>
+
+</div>
+
+
+
+
+
+</div>
+
+
+
+<div id="pagebody">
+
+<div id="content">
+<ul>
+<li><p>License</p>
+
+<p>  CCNQ3 -- carrierclass.net v3
+  Copyright (C) 2011  Stéphane Alnet</p>
+
+<p>  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU Affero General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.</p>
+
+<p>  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU Affero General Public License for more details.</p>
+
+<p>  You should have received a copy of the GNU Affero General Public License
+  along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p></li>
+<li><p>Content</p></li>
+</ul>
+
+
+<p>FIXME This document needs to be updated (2012-02-10).</p>
+
+<p>etc/
+  lighttpd2/  -- Proxy for main site
+  monit/      -- System monitoring examples</p>
+
+<p>applications/
+  portal/     -- Registration, etc.
+  roles/      -- On-the-fly creation of new (read) replicas from global databases
+  prepaid/    -- Prepaid call handling
+  cnam/       -- CNAM client</p>
+
+<p>  common/     -- Generic applications (replication, sending mail)
+  _users/     -- Bootstrapping
+  host/       -- Host installation</p>
+
+<p>  provisioning/   -- Installation and application for the provisioning database</p>
+
+<p>lib/          -- CoffeeScript libraries
+  cdb         -- CouchDB access helpers
+  cdb_changes -- monitor CouchDB _changes handler
+  esl         -- Access to the FreeSwitch Event System
+  password    -- A memorable password generator</p>
+
+<p>public/       -- Common content that should be installed under the root of the main site
+              -- and made available as (relative URI) /public/...
+  images/
+  js/         -- javascripts
+  css/        -- stylesheets</p>
+
+<p>private/      -- Misc. application under development (might eventually move under applications/)</p>
+
+<p>common/       -- Repository for other applications data
+  freeswitch/
+  mediaproxy/
+  opensips/</p>
+
+<p>slayers/      -- REST interfaces to other protocoles
+  dsmlayer    -- The Dancer Session Manager used in ccnq2.0
+  pgslayer    -- A generic REST-to-DBI interface</p>
+
+<ul>
+<li><p>Applications code layout</p>
+
+<p>agents/     -- Any background agents; most of them monitor CouchDB <em>changes and
+            -- act upon insertion / modification ..
+couchapps/  -- CouchApps (in CoffeeScript)
+            -- Normally called "</em>design/${application}" with ${application} the name
+            -- of the application (to avoid conflicts).
+node/       -- Zappa REST APIs
+scripts/    -- FreeSwitch (Lua) scripts
+conf/       -- FreeSwitch configuration fragments (examples)</p>
+
+<p>*.config files are actually JSON documents</p></li>
+<li><p>APIs</p></li>
+</ul>
+
+
+<p>In most cases (except for the core portal) the application is driven from the
+web browser. Therefor most applications will provide REST/JSON APIs only.</p>
+
+<p>Moreover these are only provided for databases updates (where the node/ code
+allows writer access without allowing reader access to the global CouchDB databases).
+For databases read, the application is a couchapp or (equivalently) static client-side
+HTML and Javascript, accessing the "source+prefix"-specific database directly.</p>
+
+<ul>
+<li>Central databases</li>
+</ul>
+
+
+<p>The following central databases are available:
+  _users        -- System-wide authentication and authorization
+  usercode      -- System-wide replicatable applications
+  provisioning  -- System-wide provisioning information (host, endpoint, location, number, ..)
+  billing       -- System-wide billing information (account, ..)
+  cdr           -- System-wide CDR repository</p>
+
+<ul>
+<li>Unified web access</li>
+</ul>
+
+
+<p>The web access is unified as follows:</p>
+
+<ul>
+<li><p>A unified website, such as https://example.net/ , is used for all applications.
+The main page should include /public/js/default.js , /public/css/default.css , and
+contain a "content" ID where the CCNQ3 applications will load.</p></li>
+<li><p>The content in the subdirectories of "public" is available under the root:
+  https://example.net/public/js
+  https://example.net/public/css
+  https://example.net/public/images</p></li>
+<li><p>The "portal" application must be accessible under /u/
+  i.e.  https://example.net/u/path  is a proxy for  /path in the portal application</p></li>
+<li><p>The global couchdb databases (_users,provisioning,..) and all the u${UUID} databases are mapped at the root.</p></li>
+<li><p>CouchDB's _session is mapped at the root.
+[FIXME This assumes we can use a distributed session scheme in CouchDB which doesn't exist yet.]
+[For now this doesn't cause any issue as long as the website uses a single CouchDB host for sessions.]</p></li>
+</ul>
+
+
+<p>Such a unified URI space can be constructed using standard application mount points / reverse proxy in nginx, etc.
+We present an example configuration for lighttp2 because nginx does currently not support reverse proxying IPv6 hosts, while lighttp2 (or apache2) does.</p>
+
+</div>
+
+
+
+
+
+</div>
+
+<div id="footer" class="pagefooter">
+
+<div id="pageinfo">
+
+
+
+
+
+
+
+
+
+<div class="pagedate">
+Last edited <span class="date">Wed Feb 15 21:51:22 2012</span>
+<!-- Created <span class="date">Wed Feb 15 21:51:22 2012</span> -->
+</div>
+
+</div>
+
+
+<!-- from CCNQ3 -->
+</div>
+
+</div>
+
+</body>
+</html>
