@@ -49,9 +49,296 @@ bugs
 <div id="content">
 <p>This is CCNQ3's bug list. Link bugs to <a href="./done/">done</a> when done.</p>
 
-<p>There are 7 "open" bugs:</p>
+<p>There are 8 "open" bugs:</p>
 
-<p>[[!inline <span class="error">Error: cannot match pages: bugs/no_commit_mails_for_new_pages does not exist</span>]]</p>
+<div  class="feedlink">
+
+
+</div>
+<div class="inlinepage">
+
+<div class="inlineheader">
+
+<span class="header">
+
+<a href="./no_commit_mails_for_new_pages">no commit mails for new pages</a>
+
+</span>
+</div>
+
+<div class="inlinecontent">
+
+</div>
+
+<div class="inlinefooter">
+
+<span class="pagedate">
+Posted <span class="date">Fri Mar 23 14:20:39 2012</span>
+</span>
+
+
+
+
+
+
+
+
+
+</div>
+
+</div>
+<div class="inlinepage">
+
+<div class="inlineheader">
+
+<span class="header">
+
+<a href="./merging/">merging</a>
+
+</span>
+</div>
+
+<div class="inlinecontent">
+<p>Should use a proper (recursive) merge in form handling instead of
+$.extend, which only extends the hash at the first level.</p>
+
+</div>
+
+<div class="inlinefooter">
+
+<span class="pagedate">
+Posted <span class="date">Tue Jan 10 11:21:55 2012</span>
+</span>
+
+
+
+
+
+
+
+
+
+</div>
+
+</div>
+<div class="inlinepage">
+
+<div class="inlineheader">
+
+<span class="header">
+
+<a href="./mail_password_should_use_configuration">mail password should use configuration</a>
+
+</span>
+</div>
+
+<div class="inlinecontent">
+
+</div>
+
+<div class="inlinefooter">
+
+<span class="pagedate">
+Posted <span class="date">Tue Dec 27 11:46:28 2011</span>
+</span>
+
+
+
+
+
+
+
+
+
+</div>
+
+</div>
+<div class="inlinepage">
+
+<div class="inlineheader">
+
+<span class="header">
+
+<a href="./new-provisioning-types/">new-provisioning-types</a>
+
+</span>
+</div>
+
+<div class="inlinecontent">
+<p>Q: What is the proper data model for application extensions?</p>
+
+<p>Say, I want to add a new module that adds components to provisioning.
+How do I add valid "provisioning_types" (from an external module)?</p>
+
+<p>A: At least inside the deployment project (which could be the plain provisioning app or not) I need to have some registry of applicable types, which then gets included inside the user_push/user_pull functions.</p>
+
+<p>(Alternatively enumerate user_push/user_pull functions in _design documents?)</p>
+
+</div>
+
+<div class="inlinefooter">
+
+<span class="pagedate">
+Posted <span class="date">Fri Sep 30 11:19:10 2011</span>
+</span>
+
+
+
+
+
+
+
+
+
+</div>
+
+</div>
+<div class="inlinepage">
+
+<div class="inlineheader">
+
+<span class="header">
+
+<a href="./per-account-routes/">per-account-routes</a>
+
+</span>
+</div>
+
+<div class="inlinecontent">
+<p>Per account routes, especially to do call restriction (e.g. per account country blocks).</p>
+
+<p>(Actually "per anything" routes -- account, calling number, endpoint, .. -- would be best.)</p>
+
+</div>
+
+<div class="inlinefooter">
+
+<span class="pagedate">
+Posted <span class="date">Fri Sep 30 11:19:10 2011</span>
+</span>
+
+
+
+
+
+
+
+
+
+</div>
+
+</div>
+<div class="inlinepage">
+
+<div class="inlineheader">
+
+<span class="header">
+
+<a href="./IPv6/">IPv6</a>
+
+</span>
+</div>
+
+<div class="inlinecontent">
+<p>Due to npm limitations and github/npmregistry not being available over IPv6, installation must use IPv4.</p>
+
+<p>Due to Node.js URL parsing bug, use host names (DNS) instead of IPv6 IP Addresses for configuration of the system.</p>
+
+</div>
+
+<div class="inlinefooter">
+
+<span class="pagedate">
+Posted <span class="date">Sun Aug 28 10:33:55 2011</span>
+</span>
+
+
+
+
+
+
+
+
+
+</div>
+
+</div>
+<div class="inlinepage">
+
+<div class="inlineheader">
+
+<span class="header">
+
+<a href="./cdb_client/">cdb client</a>
+
+</span>
+</div>
+
+<div class="inlinecontent">
+<p>= Use standard CDB interface =</p>
+
+<p>Look into https://github.com/creationix/couch-client
+(has auto-batching + _changes)</p>
+
+</div>
+
+<div class="inlinefooter">
+
+<span class="pagedate">
+Posted <span class="date">Thu Aug 18 14:43:12 2011</span>
+</span>
+
+
+
+
+
+
+
+
+
+</div>
+
+</div>
+<div class="inlinepage">
+
+<div class="inlineheader">
+
+<span class="header">
+
+<a href="./3059_basic_prepaid/">3059 basic prepaid</a>
+
+</span>
+</div>
+
+<div class="inlinecontent">
+<p>= Prepaid platform =</p>
+
+<p>The project is to have a simple platform with N minutes, US-only, no-prompt type of accounting, for low call-volume ("demo") type of accounts.
+The code for that is written and needs stress-testing, validation, integration with the portal, documentation, training.</p>
+
+</div>
+
+<div class="inlinefooter">
+
+<span class="pagedate">
+Posted <span class="date">Thu Aug 18 14:43:12 2011</span>
+</span>
+
+
+
+
+
+
+
+
+
+</div>
+
+</div>
+
+
+
+
 
 </div>
 

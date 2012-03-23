@@ -49,163 +49,296 @@ data-dictionary
 <div id="pagebody">
 
 <div id="content">
-<p>This document is up-to-date as of 2012-03-05.</p>
+<p>This document describes the configuration parameters for ccnq3.</p>
 
-<p>Notes:
-* URI of databases = URI of CouchDB databases (always a string).
-  These URIs might contain authentication usernames and passwords.</p>
+<p>In this document the term <em>URI of database</em> signifies a URI of some CouchDB database,
+and is always a string.
+These URIs might contain authentication usernames and passwords.</p>
 
 <h1>provisioning database</h1>
 
+<p>The provisioning database contains the master copy of all provisioning information
+for an entire system.
+It contains different types of records, which can be identified by their "type" field.
+The type is also the first part of the records' identifier, to avoid collisions.</p>
+
 <h2>host (aka config) provisioning records</h2>
 
-<h3>Common section</h3>
+<p>The local configuration file for a host, normally found in
+<code>/etc/ccnq3/host.json</code>, is a copy of the <code>host</code> record for that
+specific server as found in the master CouchDB provisioning database.</p>
+
+<p>There must be exactly one "host" record for each server in the system.
+Servers are identified by there (arbitrary) Full Qualified Domain Name (FQDN).</p>
+
+<p>Most changes in this type of records might require you to:</p>
+
+<ul>
+<li><p>either restart the ccnq3 processes to apply the changes:</p>
+
+<pre><code>/etc/init.d/ccnq3 restart
+</code></pre>
+
+<p>(This should be sufficient in most cases.)</p></li>
+<li><p>in some cases reinstall the ccnq3 package:</p>
+
+<pre><code>aptitude reinstall ccnq3
+</code></pre>
+
+<p>This is especially true when adding an application, so that
+the proper dependencies might be installed for the new application.</p></li>
+</ul>
+
+
+<p>However this does not apply to commands (such as the ones in "sip_commands"),
+which are executed immediately.</p>
+
+<p>Please note that restarting, reinstalling, or submitting commands in a lot of
+cases will cause calls to disconnect. These operations are best used during
+dedicated maintenance windows and should be avoided during production use.</p>
+
+<p>Currently the main freeswitch, opensips, and medaproxy processes are not started by ccnq3.
+These processes might be controlled using their respective /etc/init.d/ scripts.</p>
+
+<p>Developper note: "host" records are referred to as the "config" record inside most applications.</p>
+
+<h3>Common section (host provisioning record)</h3>
 
 <p>All the fields in this section are pre-populated by the various scripts.
-Only the "applications" array will need to be expanded.</p>
+There is no reason to change them after the initial installation of a server.
+Only the "applications" array will need to be expanded.
+(This can be easily done using the web portal.)</p>
 
 <p>Caveat: provisioning.host_couchdb_uri might need to be fixed if the system cannot guess
 your installation.</p>
 
-<pre><code>_id: type+":"+host
-account: ""    (the empty string)
-updated_at: integer, update timestamp in ms [required]
-  Note: new Date().getTime()  for example
+<ul>
+<li><p><code>_id</code>: type+":"+host</p></li>
+<li><p><code>account</code>: ""    (the empty string)</p></li>
+<li><p>`updated_at: integer, update timestamp in ms [required]</p>
 
-type:"host"
-host: string; hostname, preferably FQDN (must match what the "hostname" command returns)
+<p><code>new Date().getTime()</code>  for example</p></li>
+<li><p><code>type</code>: "host"</p></li>
+<li><p><code>host</code>: string; hostname, preferably FQDN (must match what the "hostname" command returns)</p></li>
+<li><p><code>interfaces</code>: {} of {}, fields:</p>
 
-interfaces: {} of {}, fields:
-  ipv4: IP (if interface is v4)
-  ipv6: IP (if interface is v6)
-  Note: the name of the records must be unique, so they cannot just be the interface's name.
-interfaces.primary.ipv4
-interfaces.primary.ipv6
-  If present, these are selected as the addresses for the host itself.
-  Otherwise a random non-private IPv4 address is selected, and a
-  random IPv6 address is selected, from the ones present in the
-  "interfaces" records.
+<ul>
+<li><code>ipv4</code>: IP (if interface supports v4)</li>
+<li><code>ipv6</code>: IP (if interface supports v6)</li>
+</ul>
 
-# Note: Changing any of these settings would require to restart the matching
-#       services, since configuration is read (in most cases) once at startup.
 
-admin:   (only present for bootstrap-system hosts normally; there's no reason to modify these)
-  couchdb_uri: server admin URI
-  system: true   (indicates this host is the one that should do system updates)
+<p>The key of the records must be unique, so they cannot just be the interface's name,
+since an interface may have multiple v4 or v6 IP addresses.</p>
 
-applications: [] of strings, list of applications that need to be installed
-  Note: these are simply relative paths to the matching "package" for that application.
-  Note: to apply changes to the list of applications, you must "aptitude reinstall ccnq3" on the host.
-  Example:   [ "applications/host", "applications/traces", "applications/freeswitch" ]
+<p>The key <code>primary</code> has a special meaning (see next item).</p></li>
+<li><p><code>interfaces.primary.ipv4</code>,
+<code>interfaces.primary.ipv6</code></p>
 
-usercode:
-  couchdb_uri: URI of the usercode database (with database admin authentication) [used by couchapps to install their applications]
+<p>If present, these are selected as the addresses for the host itself.
+Otherwise a random non-private IPv4 address is selected, and a
+random IPv6 address is selected, from the ones present in the
+"interfaces" records.</p></li>
+</ul>
 
-provisioning:
-  couchdb_uri: URI of the provisioning database (with database admin authentication) [used by couchapps apps to insert new applications]
-    Note: normally only present on a manager host (and only used by installation scripts)
-  host_couchdb_uri: URI of the provisioning database (read-only) [allows access to the main provisioning database from any host]
-    Note: this URI is used as the source for replication of the provisioning database onto a non-manager host
-          Replication will work better if this URI points directly to CouchDB (rather than a reverse proxy, for example).
-    Note: this URI is also used by ccnq3_config to locate the host's configuration; if it is not present only the local (file-based) configuration will be used.
-  local_couchdb_uri: URI of a local replica of the provisioning database [used by local applications such as opensips]
-    Note: generally http://127.0.0.1:5984/provisioning [no authentication to keep things faster]
-    Note: realtime (call-handling) applications should only rely on this database as their primary source
-    Note: must have db admin access to the database (so that applications can push their design documents)
 
-install: (normally not defined)
-  # This feature is used to force re-installation of the corresponding databases (for example to change the URI)
-  usercode:
-    couchdb_uri
-  provisioning:
-    couchdb_uri
-  users:
-    couchdb_uri
-</code></pre>
+<p>Changing any of the following settings would require to restart the matching
+services, since configuration is read (in most cases) once at startup.</p>
 
-<h3>Specific to hosts running FreeSwitch.</h3>
+<ul>
+<li><p><code>admin</code>:   (only present for bootstrap-system hosts normally; there's no reason to modify these)</p>
+
+<ul>
+<li><code>couchdb_uri</code>: server admin URI</li>
+<li><code>system</code>: true   (indicates this host is the one that should do system updates)</li>
+</ul>
+</li>
+<li><p><code>applications</code>: [] of strings, list of applications that need to be installed</p>
+
+<p>These are simply relative paths to the matching "package" for that application.
+To apply changes to the list of applications, you must <code>aptitude reinstall ccnq3</code> on the host.</p>
+
+<p>Example:</p>
+
+<pre><code>[ "applications/host", "applications/traces", "applications/freeswitch" ]
+</code></pre></li>
+<li><p><code>usercode</code>:</p>
+
+<ul>
+<li><code>couchdb_uri</code>: URI of the usercode database (with database admin authentication) [used by couchapps to install their applications]</li>
+</ul>
+</li>
+<li><p><code>provisioning</code>:</p>
+
+<ul>
+<li><p><code>couchdb_uri</code>: URI of the provisioning database (with database admin authentication) [used by couchapps apps to insert new applications]</p>
+
+<p>Normally only present on a manager host (and only used by installation scripts)</p></li>
+<li><p><code>host_couchdb_uri</code>: URI of the provisioning database (read-only) [allows access to the main provisioning database from any host]</p>
+
+<p>This URI is used as the source for replication of the provisioning database onto a non-manager host
+Replication will work better if this URI points directly to CouchDB (rather than a reverse proxy, for example).</p>
+
+<p>This URI is also used by ccnq3_config to locate the host's configuration; if it is not present only the local (file-based) configuration will be used.</p></li>
+<li><p><code>local_couchdb_uri</code>: URI of a local replica of the provisioning database [used by local applications such as opensips]</p>
+
+<p>Generally <code>http://127.0.0.1:5984/provisioning</code> [no authentication to keep things faster]</p>
+
+<p>Realtime (call-handling) applications should only rely on this database as their primary source.</p>
+
+<p>Must have db admin access to the database (so that applications can push their design documents).</p></li>
+</ul>
+</li>
+<li><p><code>install</code>: (normally not defined)</p>
+
+<p>This feature is used to force re-installation of the corresponding databases (for example to change the URI)</p>
+
+<ul>
+<li><code>usercode</code>:
+
+<ul>
+<li><code>couchdb_uri</code></li>
+</ul>
+</li>
+<li><code>provisioning</code>:
+
+<ul>
+<li><code>couchdb_uri</code></li>
+</ul>
+</li>
+<li><code>users</code>:
+
+<ul>
+<li><code>couchdb_uri</code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+
+<h3>Specific to hosts running FreeSwitch</h3>
 
 <p>To add a FreeSwitch host:</p>
 
 <ol>
-<li>configure the fields in this section
-(You'll need to configure at least "sip_domain_name".)
-(You'll need to configure one sip_profiles[] in order to be able to place calls.)</li>
-<li>add "applications/freeswitch" to the applications field [and restart ccnq3]</li>
-<li><p>run common/freeswitch/install.sh on the host to enable FreeSwitch</p>
+<li><p>Configure the fields in this section</p>
 
-<p> sip_domain_name:  string (required); FQDN accepted by the server
-   Note: this should be the "cluster name" for servers running similar
-     configurations. This is used by applications/dns to create
-     SRV records for these services. This is also used by applications/opensips
-     to create gateway entries for the egress_gwid in those domains/clusters.
-     Finally, this is the domain name accepted by OpenSIPS servers in that cluster.
- rtp_ip: local IP to bind to for RTP [default: "auto"]
- sip_profiles: {} of profiles descriptions:</p>
+<p>(You'll need to configure at least <code>sip_domain_name</code>.)</p>
 
-<pre><code> sip_profiles[profile_name]:
-
-   # Sofia data
-   template: sofia template name (e.g. "sbc-media", "sbc-nomedia")
-   # For the "sbc*" types, we need:
-   ingress_sip_ip: which IP (v4,v6) to bind for ingress processing
-   ingress_sip_port: which port to bind for ingress processing [in the range 5060 to 5299]
-   ingress_acl: [] of CIDR records "ip/masklen" source IPs allowed for ingress processing
-   egress_sip_ip: which IP (v4,v6) to bind for egress processing [default: ingress_sip_ip]
-   egress_sip_port: which port to bind for egress processing [default: 10000+ingress_sip_port; in the range 15060 to 15299]
-   egress_acl: [] of CIDR records "ip/masklen" source IPs allowed for the egress processing
-   egress_gwid: integer, optional; a (unique) gateway id to be used in routing rules
-
-     Note: port numbers must be in the range 5060 to 5299 or 15060 to 15299 to be compatible with the "traces" application.
-     Note: look in doc/doc/port-numbers.mdwn for port numbers conventions.
-     Note: egress_gwid must be unique amongst all gateway IDs, including the ones in "gateway"-type records.
-
-   # Dialplan data
-   handler: dialplan template name (e.g. "client-sbc", "voicemail")
-   egress_target: domain where to send egress calls
-
-   # For handler="client-sbc"
-   type: dialplan profile type (e.g. "usa", "france")
-   send_call_to: where to send the calls ("socket", "bridge") [default: "socket"]
-   ingress_target: domain where to send ingress calls
-
-   # For handler on one of the carrier-sbc's
-   enum_root: Carrier ENUM root for inbound routing
-
-   # For handler="voicemail"
-   default_language: string; default voicemail language [default: this host's voicemail.default_language, see below]
-</code></pre>
-
-<p>   Notes: changes (except for <em>_sip_ip and </em>_sip_port) are automatically applied.</p>
-
-<p> sip_commands: {} of profiles commands:</p>
-
-<pre><code> sip_commands[sofia_profile]: string
-   One of:
-     "start"       sofia profile &lt;profile_name&gt; start
-     "restart"     sofia profile &lt;profile_name&gt; restart reloadxml  [required to change IP or port]
-     "stop"        sofia profile &lt;profile_name&gt; killgw
-
- sip_commands.freeswitch: string
-   One of:
-     "reload sofia"    unload mod_sofia, load mod_sofia            [required to add a new profile]
-     "pause inbound"   fsctl pause inbound
-     "pause outbound"  fsctl pause outbound
-     "resume inbound"  fsctl resume inbound
-     "resume outbound" fsctl resume outbound
-
- Note: All these commands will cause calls to drop if any is present on that profile.
- Note: The "sofia_profile" key is either "egress-#{profile_name}" or "ingress-#{profile_name}" so that each direction
-       can be restarted independently.
- Note: Add a command then remove it from the hash to prevent accidental misfiring of commands.
- Note: A special "sofia_profile" key "opensips" is used to send events to a running OpenSIPS process (rather than a
-       FreeSwitch sofia profile). See below for more information.
-</code></pre>
-
-<p> sip_variables: {} of global (FreeSwitch) variables; defaults to {}
-     Note: The idea is that these can be used on a per-host basis by additional dialplans, profiles, etc.
-     Note: These should also show up in CDRs. FIXME confirm this is the case</p></li>
+<p>(You'll need to configure one <code>sip_profiles[]</code> in order to be able to place calls.)</p></li>
+<li><p>Add <code>applications/freeswitch</code> to the applications field [and restart ccnq3]</p></li>
 </ol>
+
+
+<p>Configuration options:</p>
+
+<ul>
+<li><p><code>sip_domain_name</code>:  string (required); FQDN accepted by the server</p>
+
+<p>This should be the "cluster name" for servers running similar
+configurations. This is used by applications/dns to create
+SRV records for these services. This is also used by applications/opensips
+to create gateway entries for the egress_gwid in those domains/clusters.
+Finally, this is the domain name accepted by OpenSIPS servers in that cluster.</p></li>
+<li><p>rtp_ip: local IP to bind to for RTP [default: "auto"]</p></li>
+<li>cdr_aggregate_uri: URI where the local CDRs should be replicated to [no default]
+  Note: must contain authentication (for the local host).</li>
+<li><p>sip_profiles: {} of profiles descriptions:</p>
+
+<ul>
+<li><p>sip_profiles[profile_name]:</p></li>
+<li><p>Sofia data</p>
+
+<ul>
+<li>template: sofia template name (e.g. "sbc-media", "sbc-nomedia")</li>
+</ul>
+</li>
+<li><p>For the "sbc*" types, we need:</p>
+
+<ul>
+<li>ingress_sip_ip: which IP (v4,v6) to bind for ingress processing</li>
+<li>ingress_sip_port: which port to bind for ingress processing [in the range 5060 to 5299]</li>
+<li>ingress_acl: [] of CIDR records "ip/masklen" source IPs allowed for ingress processing</li>
+<li>egress_sip_ip: which IP (v4,v6) to bind for egress processing [default: ingress_sip_ip]</li>
+<li>egress_sip_port: which port to bind for egress processing [default: 10000+ingress_sip_port; in the range 15060 to 15299]</li>
+<li>egress_acl: [] of CIDR records "ip/masklen" source IPs allowed for the egress processing</li>
+<li>egress_gwid: integer, optional; a (unique) gateway id to be used in routing rules</li>
+</ul>
+
+
+<p>Note: port numbers must be in the range 5060 to 5299 or 15060 to 15299 to be compatible with the "traces" application.</p>
+
+<p>Note: look in doc/doc/port-numbers.mdwn for port numbers conventions.</p>
+
+<p>Note: egress_gwid must be unique amongst all gateway IDs, including the ones in "gateway"-type records.</p></li>
+<li><p>Dialplan data</p>
+
+<ul>
+<li>handler: dialplan template name (e.g. "client-sbc", "voicemail")</li>
+<li>egress_target: domain where to send egress calls</li>
+</ul>
+</li>
+<li><p>For handler="client-sbc"</p>
+
+<ul>
+<li>type: dialplan profile type (e.g. "usa", "france")</li>
+<li>send_call_to: where to send the calls ("socket", "bridge") [default: "socket"]</li>
+<li>ingress_target: domain where to send ingress calls</li>
+</ul>
+</li>
+<li><p>For handler on one of the carrier-sbc's</p>
+
+<ul>
+<li>enum_root: Carrier ENUM root for inbound routing</li>
+</ul>
+</li>
+<li><p>For handler="voicemail"</p>
+
+<ul>
+<li>default_language: string; default voicemail language [default: this host's voicemail.default_language, see below]</li>
+</ul>
+</li>
+</ul>
+
+
+<p>  Changes (except for <em>_sip_ip and </em>_sip_port) are automatically applied.</p></li>
+<li><p>sip_commands: {} of profiles commands:</p>
+
+<ul>
+<li><p>sip_commands[sofia_profile]: string
+  One of:
+    "start"       sofia profile  start
+    "restart"     sofia profile  restart reloadxml  [required to change IP or port]
+    "stop"        sofia profile  killgw</p></li>
+<li><p>sip_commands.freeswitch: string
+  One of:
+    "reload sofia"    unload mod_sofia, load mod_sofia            [required to add a new profile]
+    "pause inbound"   fsctl pause inbound
+    "pause outbound"  fsctl pause outbound
+    "resume inbound"  fsctl resume inbound
+    "resume outbound" fsctl resume outbound</p></li>
+</ul>
+
+
+<p>All these commands will cause calls to drop if any is present on that profile.</p>
+
+<p>The "sofia_profile" key is either "egress-#{profile_name}" or "ingress-#{profile_name}" so that each direction
+can be restarted independently.</p>
+
+<p>Add a command then remove it from the hash to prevent accidental misfiring of commands.</p>
+
+<p>A special "sofia_profile" key "opensips" is used to send events to a running OpenSIPS process (rather than a
+FreeSwitch sofia profile). See below for more information.</p>
+
+<p>A special "sofia_profile" key "registrant" is used to send events to a running registrant process (rather than a
+FreeSwitch sofia profile). See below for more information.</p></li>
+<li><p>sip_variables: {} of global (FreeSwitch) variables; defaults to {}</p>
+
+<p>The idea is that these can be used on a per-host basis by additional dialplans, profiles, etc.</p>
+
+<p>These should also show up in CDRs. FIXME confirm this is the case</p></li>
+</ul>
 
 
 <h3>Specific to hosts running OpenSIPS.</h3>
@@ -213,33 +346,44 @@ install: (normally not defined)
 <p>To add an OpenSIPS host:</p>
 
 <ol>
-<li>configure the fields in this section</li>
-<li>add "applications/opensips" to the applications field [and restart ccnq3]</li>
-<li>run common/mediaproxy/install.sh to install mediaproxy FIXME still requires some work</li>
-<li><p>run common/opensips/install.sh on the host to enable OpenSIPS</p>
-
-<p> opensips_proxy:
-   port:34340   integer, required, do not change [default]
-   hostname:"127.0.0.1"   string, required, do not change [default]
-   usrloc_uri: URI of the location database (used to save registration data)
-     Note: this should be "http://127.0.0.1:5984/location" [default]</p>
-
-<p> opensips:
-   model: "complete", or any other model defined in common/opensips [required]
-   number_domain: string; a domain used to identify local numbers [default: "local"]
-     Note: you might think of it as a dialplan name, as well.
-   listen: [] of strings "host:port" to which OpenSIPS will bind()  [default is the empty array, in which case OpenSIPS binds to all interfaces on port 5060]
-   local_ipv4: for models using it ("conference"), IP where to send all INVITE messages
-   local_ipv6: reserved</p>
-
-<p>   voicemail_notifier: incoming SUBSCRIBE messages are sent to this host:port or name
-     Note: typically should point to the egress-* voicemail profile's NAPTR record.
-     Note: if this parameter is not defined, forwarding of message waiting indication (MWI) via SUBSCRIBE and NOTIFY messages will not work.</p>
-
-<p> sip_commands.opensips: string
-   One of:
-     "reload routes"         [apply "rule" or "gateway" record changes]</p></li>
+<li>Configure the fields in this section</li>
+<li>Add "applications/opensips" to the applications field [and restart ccnq3]</li>
+<li>Run common/mediaproxy/install.sh to install mediaproxy FIXME still requires some work</li>
 </ol>
+
+
+<p>Configuration options:</p>
+
+<ul>
+<li><p>opensips_proxy:</p>
+
+<ul>
+<li>port:34340   integer, required, do not change [default]</li>
+<li>hostname:"127.0.0.1"   string, required, do not change [default]</li>
+<li>usrloc_uri: URI of the location database (used to save registration data)
+  Note: this should be "http://127.0.0.1:5984/location" [default]</li>
+<li>usrloc_aggregate_uri: URI where the location database should be replicated to [no default]
+  Note: must contain authentication (for the local host).</li>
+</ul>
+</li>
+<li><p>opensips:</p>
+
+<ul>
+<li>model: "complete", or any other model defined in common/opensips [required]</li>
+<li>number_domain: string; a domain used to identify local numbers [default: "local"]
+  Note: you might think of it as a dialplan name, as well.</li>
+<li>listen: [] of strings "host:port" to which OpenSIPS will bind()  [default is the empty array, in which case OpenSIPS binds to all interfaces on port 5060]</li>
+<li>local_ipv4: for models using it ("conference"), IP where to send all INVITE messages</li>
+<li><p>local_ipv6: reserved</p></li>
+<li><p>voicemail_notifier: incoming SUBSCRIBE messages are sent to this host:port or name
+  Note: typically should point to the egress-* voicemail profile's NAPTR record.
+  Note: if this parameter is not defined, forwarding of message waiting indication (MWI) via SUBSCRIBE and NOTIFY messages will not work.</p></li>
+</ul>
+</li>
+<li><p>sip_commands.opensips: string
+  One of:
+    "reload routes"         [apply "rule" or "gateway" record changes]</p></li>
+</ul>
 
 
 <h3>Specific to hosts running the portal (or its back-end).</h3>
@@ -255,33 +399,61 @@ install: (normally not defined)
 <p>Note: this service is enabled by default on the manager host.
 You should not have to modify these settings.</p>
 
-<pre><code>portal:
-  port: integer (8765)
-  hostname:  string ("127.0.0.1")
-session:
-  secret:  string; must be a random string
-  couchdb_uri:  public URI used to create CouchDB sessions (must end with "/_session"; no authentication in the URI)
-users:
-  couchdb_uri: URI of the _users database (with database admin authentication)
-  replicate_uri: URI for "/_replicate" (with database admin authentication)
-  userdb_base_uri: base URI of the various users' databases (with server admin authentication, used to create the databases)
-  public_userdb_base_uri: public base URI of the various users' databases (no authentication! given out to the users)
-mailer:     Used as the configuration for the node-mailer package.
-  sendmail: "/usr/sbin/sendmail"
-  SMTP: null
-    Note: this is required for applications/portal and applications/voicemail to send out email notifications.
-mail_password:
-  sender_local_part: "support"; The mail_password agent will send emails from  sender_local_part+"@"+domain (where domain is the user's record's "domain" field).
-  file_base: string; a prefix used to locate the format files used by the email notifier.
-    Note: On Unix the string must finish with a slash.
-    Note: The notifier will try to append "portal_password.subject", "portal_password.body", "portal_password.html" to compose the email subject, text body and HTML body, respectively. If one of the files is missing, a default is used.
-    Note: The files must contain Milk templates. The template will receive in particular the following parameters:
-      domain: the web domain used to create the account
-      name: the username
-      password: the password
+<ul>
+<li><p>portal:</p>
 
-Note: "host" records are referred to as the "config" record inside most applications.
-</code></pre>
+<ul>
+<li><p>port: integer (8765)</p></li>
+<li><p>hostname:  string ("127.0.0.1")</p></li>
+</ul>
+</li>
+<li><p>session:</p>
+
+<ul>
+<li><p>secret:  string; must be a random string</p></li>
+<li><p>couchdb_uri:  public URI used to create CouchDB sessions (must end with "/_session"; no authentication in the URI)</p></li>
+</ul>
+</li>
+<li><p>users:</p>
+
+<ul>
+<li><p>couchdb_uri: URI of the _users database (with database admin authentication)</p></li>
+<li><p>replicate_uri: URI for "/_replicate" (with database admin authentication)</p></li>
+<li><p>userdb_base_uri: base URI of the various users' databases (with server admin authentication, used to create the databases)</p></li>
+<li><p>public_userdb_base_uri: public base URI of the various users' databases (no authentication! given out to the users)</p></li>
+</ul>
+</li>
+<li><p>mailer:     Used as the configuration for the node-mailer package.</p>
+
+<ul>
+<li><p>sendmail: "/usr/sbin/sendmail"</p></li>
+<li><p>SMTP: null</p></li>
+</ul>
+
+
+<p> This section is required for applications/portal and applications/voicemail to send out email notifications.</p></li>
+<li><p>mail_password:</p>
+
+<ul>
+<li><p>sender_local_part: "support"; The mail_password agent will send emails from  sender_local_part+"@"+domain (where domain is the user's record's "domain" field).</p></li>
+<li><p>file_base: string; a prefix used to locate the format files used by the email notifier.</p>
+
+<p>Note: On Unix the string must finish with a slash.</p>
+
+<p>Note: The notifier will try to append <code>portal_password.subject</code>, <code>portal_password.body</code>, <code>portal_password.html</code> to compose the email subject, text body and HTML body, respectively. If one of the files is missing, a default is used.</p>
+
+<p>Note: The files must contain Milk templates. The template will receive in particular the following parameters:</p>
+
+<ul>
+<li>domain: the web domain used to create the account</li>
+<li>name: the username</li>
+<li>password: the password</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
 
 <h3>Specific to hosts running SIP traces.</h3>
 
@@ -291,19 +463,76 @@ Note: "host" records are referred to as the "config" record inside most applicat
 <li>install the ccnq3-traces package</li>
 <li>configure the fields in this section</li>
 <li>add "applications/traces" to the applications field</li>
+<li>make sure users who need to run traces have the "access:traces:" role.</li>
 </ol>
 
 
-<p>Note: this is not enabled by default even after you install the ccnq3-traces package.</p>
+<p>Installation note: this is not enabled by default even after you install the ccnq3-traces package.</p>
 
-<pre><code>traces:
-  interfaces: [] of interfaces names
-  # There's no reason to modify the following parameters for traces.
-  filesize: integer, maximum size of the sniffer traces (in ko), defaults to 10000
-  ringsize: integer, maximum number of sniffer trace files, defaults to 50
-  workdir: string, directory used to store the traces, defaults to /opt/ccnq3/traces
-  filter: string, pcap filter for traces, defaults to ports used by ccnq3 applications
-</code></pre>
+<ul>
+<li><p>traces:</p>
+
+<ul>
+<li><p>interfaces: [] of interfaces names</p>
+
+<p>There's no reason to modify the following parameters for traces.</p>
+
+<ul>
+<li>filesize: integer, maximum size of the sniffer traces (in ko), defaults to 10000</li>
+<li>ringsize: integer, maximum number of sniffer trace files, defaults to 50</li>
+<li>workdir: string, directory used to store the traces, defaults to /opt/ccnq3/traces</li>
+<li>filter: string, pcap filter for traces, defaults to ports used by ccnq3 applications</li>
+</ul>
+</li>
+<li><p>run: {} of traces to run; the index is the TCP port number; content:</p>
+
+<ul>
+<li>to_user     string; To username (destination number)</li>
+<li>from_user   string; From username (calling number)</li>
+<li>call_id     string; Call-ID</li>
+<li>days_ago    integer; only lookup for this number of days ago (0 = today)</li>
+<li>format      string; either 'pcap' or 'json'</li>
+</ul>
+
+
+<p>  For each entry in <code>traces.run</code>, a single-shot web server will be started on the specified port number.
+  That server will send back either a JSON or a PCAP document which will contain packets found
+  in the available trace files on the server.
+  (Since the trace files are rotated to not exceed a given disk space, it is possible that a
+  trace might not be found even though a call was placed.)</p>
+
+<p>  The JSON ouput is an array of hash record; the records might contain the following fields:
+      "frame.time"
+      "ip.version"
+      "ip.dsfield.dscp"
+      "ip.src"
+      "ip.dst"
+      "ip.proto"
+      "udp.srcport"
+      "udp.dstport"
+      "sip.Call-ID"
+      "sip.Request-Line"
+      "sip.Method"
+      "sip.r-uri.user"
+      "sip.r-uri.host"
+      "sip.r-uri.port"
+      "sip.Status-Line"
+      "sip.Status-Code"
+      "sip.to.user"
+      "sip.from.user"
+      "sip.From"
+      "sip.To"
+      "sip.contact.addr"
+      "sip.User-Agent"
+  To obtain the complete data use the PCAP download.</p>
+
+<p>  Note: this type of request is highly CPU intensive for the target host.
+    It is only meant as a troubleshooting tool for administrators, not as a generically available service.
+    Use the cdr database to obtain per-call information as a generic service.</p></li>
+</ul>
+</li>
+</ul>
+
 
 <h3>Specific to hosts running as registrants.</h3>
 
@@ -367,11 +596,49 @@ This section specifies the parameters for applications/voicemail.</p>
       caller_id
       timestamp
     (See the "voicemail records" section below.)
+
+  callback:  Configuration to allow users to call the number that left a voicemail message
+    profile   "ingress-#{profile_name}" or "egress-#{profile_name}"
+    domain    the domain name where the message should be sent to
+    Note: if sending to a proxy, make sure the voicemail server has a matching endpoint record with "sbc" set to type 10 so that it is authorized to pass charging information along.
+</code></pre>
+
+<h3>Specific to hosts running the cdrs (CDR aggregation) service.</h3>
+
+<p>To activate the CDR aggregation service:
+1. Set the "aggregate.cdrs_uri" URI in the target host; make sure the CouchDB system has enough storage.
+2. Add "applications/cdrs" to the list of applications on the target host. Restart the ccnq3 service to activate.
+3. On each source host (hosts which are running FreeSwitch and generating global CDRs; normally your inbound-carrier and outbound-carrier SBCs), set the "cdr_aggregate_uri" to the target's host URI, with the local (source) host authentication.</p>
+
+<p>For example
+on the target host, set "aggregate.cdrs_uri" to http://admin:password@target.example.net/cdrs
+on the source host, set "cdr_aggregate_uri" to http://host%40source.example.net@target.example.net/cdrs
+(both URIs point to the same database, but the authentication is different).</p>
+
+<pre><code>aggregate
+  cdrs_uri: string;  URI for the database where the CDRs should be aggregated [no default]
+    Note: the URI must contain authentication (it is used e.g. to create the database)
+</code></pre>
+
+<h3>Specific to hosts running the locations (Location aggregation) service.</h3>
+
+<p>To activate the locations aggregation service:
+1. Set the "aggregate.locations_uri" URI in the target host.
+2. Add "applications/locations" to the list of applications on the target host. Restart the ccnq3 service to activate.
+3. On each source host (hosts which are running OpenSIPS with registration), set the "opensips_proxy.usrloc_aggregate_uri" to the target's host URI, with the local (source) host authentication.</p>
+
+<p>For example
+on the target host, set "aggregate.locations_uri" to http://admin:password@target.example.net/locations
+on the source host, set "opensips_proxy.usrloc_aggregate_uri" to http://host%40source.example.net@target.example.net/locations
+(both URIs point to the same database, but the authentication is different).</p>
+
+<pre><code>aggregate
+  locations_uri
 </code></pre>
 
 <h3>Other data in a "host" provisioning record.</h3>
 
-<h3>Attachments</h3>
+<h4>Attachments</h4>
 
 <p>Attachments of type "application/javascript" are executed after each change.
 The attachments might use any core Node.js modules.</p>
@@ -612,7 +879,7 @@ Note: We use sort_order = 1, meaning that inside gwlist each semicolon delimits 
 
 <p>Note: Changes to rules and gateways are not applied automatically. Use sip_commands.opensips = "reload routes" (or the equivalent portal action) to apply the changes.</p>
 
-<h2>emergency(provisioning records)</h2>
+<h2>emergency (provisioning records)</h2>
 
 <p>This is currently used to implement a French emergency call router.</p>
 
@@ -659,6 +926,8 @@ Note: Changes are not applied automatically. Use sip_commands.opensips = "reload
 
 <p>Note: You do not need to create gateway records for sip_profiles which have an "egress_gwid" field, these are created automatically using the host's sip_domain_name and the egress_gwid. (They will not show up in the database but will be accessible to all the OpenSIPS hosts within that sip_domain_name.)
 This feature means that you normally should not have to manually create "gateway"-type records, since all the interesting records should be created automatically.</p>
+
+<p>Note: Changes to rules and gateways are not applied automatically. Use sip_commands.opensips = "reload routes" (or the equivalent portal action) to apply the changes.</p>
 
 <h2>location (provisioning records)</h2>
 
@@ -793,14 +1062,22 @@ _attachments:
 
 
 
+<div id="backlinks">
+Links:
+
+<a href="../">doc</a>
+
+
+</div>
+
 
 
 
 
 
 <div class="pagedate">
-Last edited <span class="date">Thu Mar  8 21:00:08 2012</span>
-<!-- Created <span class="date">Thu Mar  8 21:00:08 2012</span> -->
+Last edited <span class="date">Fri Mar 23 14:12:46 2012</span>
+<!-- Created <span class="date">Fri Mar 23 14:12:46 2012</span> -->
 </div>
 
 </div>
