@@ -241,29 +241,29 @@ configurations. This is used by applications/dns to create
 SRV records for these services. This is also used by applications/opensips
 to create gateway entries for the egress_gwid in those domains/clusters.
 Finally, this is the domain name accepted by OpenSIPS servers in that cluster.</p></li>
-<li><p>rtp_ip: local IP to bind to for RTP [default: "auto"]</p></li>
-<li>cdr_aggregate_uri: URI where the local CDRs should be replicated to [no default]
+<li><p><code>rtp_ip</code>: local IP to bind to for RTP [default: "auto"]</p></li>
+<li><code>cdr_aggregate_uri</code>: URI where the local CDRs should be replicated to [no default]
   Note: must contain authentication (for the local host).</li>
-<li><p>sip_profiles: {} of profiles descriptions:</p>
+<li><p><code>sip_profiles</code>: {} of profiles descriptions:</p>
 
 <ul>
-<li><p>sip_profiles[profile_name]:</p></li>
+<li><p><code>sip_profiles[profile_name]</code>:</p></li>
 <li><p>Sofia data</p>
 
 <ul>
-<li>template: sofia template name (e.g. "sbc-media", "sbc-nomedia")</li>
+<li><code>template</code>: sofia template name (e.g. "sbc-media", "sbc-nomedia")</li>
 </ul>
 </li>
 <li><p>For the "sbc*" types, we need:</p>
 
 <ul>
-<li>ingress_sip_ip: which IP (v4,v6) to bind for ingress processing</li>
-<li>ingress_sip_port: which port to bind for ingress processing [in the range 5060 to 5299]</li>
-<li>ingress_acl: [] of CIDR records "ip/masklen" source IPs allowed for ingress processing</li>
-<li>egress_sip_ip: which IP (v4,v6) to bind for egress processing [default: ingress_sip_ip]</li>
-<li>egress_sip_port: which port to bind for egress processing [default: 10000+ingress_sip_port; in the range 15060 to 15299]</li>
-<li>egress_acl: [] of CIDR records "ip/masklen" source IPs allowed for the egress processing</li>
-<li>egress_gwid: integer, optional; a (unique) gateway id to be used in routing rules</li>
+<li><code>ingress_sip_ip</code>: which IP (v4,v6) to bind for ingress processing</li>
+<li><code>ingress_sip_port</code>: which port to bind for ingress processing [in the range 5060 to 5299]</li>
+<li><code>ingress_acl</code>: [] of CIDR records "ip/masklen" source IPs allowed for ingress processing</li>
+<li><code>egress_sip_ip</code>: which IP (v4,v6) to bind for egress processing [default: ingress_sip_ip]</li>
+<li><code>egress_sip_port</code>: which port to bind for egress processing [default: 10000+ingress_sip_port; in the range 15060 to 15299]</li>
+<li><code>egress_acl</code>: [] of CIDR records "ip/masklen" source IPs allowed for the egress processing</li>
+<li><code>egress_gwid</code>: integer, optional; a (unique) gateway id to be used in routing rules</li>
 </ul>
 
 
@@ -275,43 +275,43 @@ Finally, this is the domain name accepted by OpenSIPS servers in that cluster.</
 <li><p>Dialplan data</p>
 
 <ul>
-<li>handler: dialplan template name (e.g. "client-sbc", "voicemail")</li>
-<li>egress_target: domain where to send egress calls</li>
+<li><code>handler</code>: dialplan template name (e.g. "client-sbc", "voicemail")</li>
+<li><code>egress_target</code>: domain where to send egress calls</li>
 </ul>
 </li>
 <li><p>For handler="client-sbc"</p>
 
 <ul>
-<li>type: dialplan profile type (e.g. "usa", "france")</li>
-<li>send_call_to: where to send the calls ("socket", "bridge") [default: "socket"]</li>
-<li>ingress_target: domain where to send ingress calls</li>
+<li><code>type</code>: dialplan profile type (e.g. "usa", "france")</li>
+<li><code>send_call_to</code>: where to send the calls ("socket", "bridge") [default: "socket"]</li>
+<li><code>ingress_target</code>: domain where to send ingress calls</li>
 </ul>
 </li>
 <li><p>For handler on one of the carrier-sbc's</p>
 
 <ul>
-<li>enum_root: Carrier ENUM root for inbound routing</li>
+<li><code>enum_root</code>: Carrier ENUM root for inbound routing</li>
 </ul>
 </li>
 <li><p>For handler="voicemail"</p>
 
 <ul>
-<li>default_language: string; default voicemail language [default: this host's voicemail.default_language, see below]</li>
+<li><code>default_language</code>: string; default voicemail language [default: this host's voicemail.default_language, see below]</li>
 </ul>
 </li>
 </ul>
 
 
-<p>  Changes (except for <em>_sip_ip and </em>_sip_port) are automatically applied.</p></li>
-<li><p>sip_commands: {} of profiles commands:</p>
+<p>  Changes (except for <code>*_sip_ip</code> and <code>*_sip_port</code>) are automatically applied.</p></li>
+<li><p><code>sip_commands</code>: {} of profiles commands:</p>
 
 <ul>
-<li><p>sip_commands[sofia_profile]: string
+<li><p><code>sip_commands[sofia_profile]</code>: string
   One of:
     "start"       sofia profile  start
     "restart"     sofia profile  restart reloadxml  [required to change IP or port]
     "stop"        sofia profile  killgw</p></li>
-<li><p>sip_commands.freeswitch: string
+<li><p><code>sip_commands.freeswitch</code>: string
   One of:
     "reload sofia"    unload mod_sofia, load mod_sofia            [required to add a new profile]
     "pause inbound"   fsctl pause inbound
@@ -333,7 +333,7 @@ FreeSwitch sofia profile). See below for more information.</p>
 
 <p>A special "sofia_profile" key "registrant" is used to send events to a running registrant process (rather than a
 FreeSwitch sofia profile). See below for more information.</p></li>
-<li><p>sip_variables: {} of global (FreeSwitch) variables; defaults to {}</p>
+<li><p><code>sip_variables</code>: {} of global (FreeSwitch) variables; defaults to {}</p>
 
 <p>The idea is that these can be used on a per-host basis by additional dialplans, profiles, etc.</p>
 
@@ -355,33 +355,39 @@ FreeSwitch sofia profile). See below for more information.</p></li>
 <p>Configuration options:</p>
 
 <ul>
-<li><p>opensips_proxy:</p>
+<li><p><code>opensips_proxy</code>:</p>
 
 <ul>
-<li>port:34340   integer, required, do not change [default]</li>
-<li>hostname:"127.0.0.1"   string, required, do not change [default]</li>
-<li>usrloc_uri: URI of the location database (used to save registration data)
-  Note: this should be "http://127.0.0.1:5984/location" [default]</li>
-<li>usrloc_aggregate_uri: URI where the location database should be replicated to [no default]
-  Note: must contain authentication (for the local host).</li>
+<li><p><code>port</code>:34340   integer, required, do not change [default]</p></li>
+<li><p><code>hostname</code>:"127.0.0.1"   string, required, do not change [default]</p></li>
+<li><p><code>usrloc_uri</code>: URI of the location database (used to save registration data)</p>
+
+<p>This should be "http://127.0.0.1:5984/location" [default]</p></li>
+<li><p><code>usrloc_aggregate_uri</code>: URI where the location database should be replicated to [no default]</p>
+
+<p>Must contain authentication (for the local host).</p></li>
 </ul>
 </li>
 <li><p>opensips:</p>
 
 <ul>
-<li>model: "complete", or any other model defined in common/opensips [required]</li>
-<li>number_domain: string; a domain used to identify local numbers [default: "local"]
-  Note: you might think of it as a dialplan name, as well.</li>
-<li>listen: [] of strings "host:port" to which OpenSIPS will bind()  [default is the empty array, in which case OpenSIPS binds to all interfaces on port 5060]</li>
-<li>local_ipv4: for models using it ("conference"), IP where to send all INVITE messages</li>
-<li><p>local_ipv6: reserved</p></li>
-<li><p>voicemail_notifier: incoming SUBSCRIBE messages are sent to this host:port or name
-  Note: typically should point to the egress-* voicemail profile's NAPTR record.
-  Note: if this parameter is not defined, forwarding of message waiting indication (MWI) via SUBSCRIBE and NOTIFY messages will not work.</p></li>
+<li><p><code>model</code>: "complete", or any other model defined in common/opensips [required]</p></li>
+<li><p><code>number_domain</code>: string; a domain used to identify local numbers [default: "local"]</p>
+
+<p>  Note: you might think of it as a dialplan name, as well.</p></li>
+<li><p><code>listen</code>: [] of strings "host:port" to which OpenSIPS will bind()  [default is the empty array, in which case OpenSIPS binds to all interfaces on port 5060]</p></li>
+<li><p><code>local_ipv4</code>: for models using it ("conference"), IP where to send all INVITE messages</p></li>
+<li><p><code>local_ipv6</code>: reserved</p></li>
+<li><p><code>voicemail_notifier</code>: incoming SUBSCRIBE messages are sent to this host:port or name</p>
+
+<p>  Typically should point to the egress-* voicemail profile's NAPTR record.</p>
+
+<p>  If this parameter is not defined, forwarding of message waiting indication (MWI) via SUBSCRIBE and NOTIFY messages will not work.</p></li>
 </ul>
 </li>
-<li><p>sip_commands.opensips: string
-  One of:
+<li><p><code>sip_commands.opensips</code>: string</p>
+
+<p>  One of:
     "reload routes"         [apply "rule" or "gateway" record changes]</p></li>
 </ul>
 
@@ -400,49 +406,48 @@ FreeSwitch sofia profile). See below for more information.</p></li>
 You should not have to modify these settings.</p>
 
 <ul>
-<li><p>portal:</p>
+<li><p><code>portal</code>:</p>
 
 <ul>
-<li><p>port: integer (8765)</p></li>
-<li><p>hostname:  string ("127.0.0.1")</p></li>
+<li><code>port</code>: integer (8765)</li>
+<li><code>hostname</code>:  string ("127.0.0.1")</li>
 </ul>
 </li>
-<li><p>session:</p>
+<li><p><code>session</code>:</p>
 
 <ul>
-<li><p>secret:  string; must be a random string</p></li>
-<li><p>couchdb_uri:  public URI used to create CouchDB sessions (must end with "/_session"; no authentication in the URI)</p></li>
+<li><code>secret</code>:  string; must be a random string</li>
+<li><code>couchdb_uri</code>:  public URI used to create CouchDB sessions (must end with "/_session"; no authentication in the URI)</li>
 </ul>
 </li>
-<li><p>users:</p>
+<li><p><code>users</code>:</p>
 
 <ul>
-<li><p>couchdb_uri: URI of the _users database (with database admin authentication)</p></li>
-<li><p>replicate_uri: URI for "/_replicate" (with database admin authentication)</p></li>
-<li><p>userdb_base_uri: base URI of the various users' databases (with server admin authentication, used to create the databases)</p></li>
-<li><p>public_userdb_base_uri: public base URI of the various users' databases (no authentication! given out to the users)</p></li>
+<li><code>couchdb_uri</code>: URI of the _users database (with database admin authentication)</li>
+<li><code>replicate_uri</code>: URI for "/_replicate" (with database admin authentication)</li>
+<li><code>userdb_base_uri</code>: base URI of the various users' databases (with server admin authentication, used to create the databases)</li>
+<li><code>public_userdb_base_uri</code>: public base URI of the various users' databases (no authentication! given out to the users)</li>
 </ul>
 </li>
-<li><p>mailer:     Used as the configuration for the node-mailer package.</p>
+<li><p><code>mailer</code>:     Used as the configuration for the node-mailer package.
+Required for applications/portal and applications/voicemail to send out email notifications.</p>
 
 <ul>
-<li><p>sendmail: "/usr/sbin/sendmail"</p></li>
-<li><p>SMTP: null</p></li>
+<li><code>sendmail</code>: "/usr/sbin/sendmail"</li>
+<li><code>SMTP</code>: null</li>
 </ul>
-
-
-<p> This section is required for applications/portal and applications/voicemail to send out email notifications.</p></li>
-<li><p>mail_password:</p>
+</li>
+<li><p><code>mail_password</code>:</p>
 
 <ul>
-<li><p>sender_local_part: "support"; The mail_password agent will send emails from  sender_local_part+"@"+domain (where domain is the user's record's "domain" field).</p></li>
-<li><p>file_base: string; a prefix used to locate the format files used by the email notifier.</p>
+<li><p><code>sender_local_part</code>: string [default: "support"]; The mail_password agent will send emails from  sender_local_part+"@"+domain (where domain is the user's record's "domain" field).</p></li>
+<li><p><code>file_base</code>: string; a prefix used to locate the format files used by the email notifier.</p>
 
-<p>Note: On Unix the string must finish with a slash.</p>
+<p>On Unix the string must finish with a slash.</p>
 
-<p>Note: The notifier will try to append <code>portal_password.subject</code>, <code>portal_password.body</code>, <code>portal_password.html</code> to compose the email subject, text body and HTML body, respectively. If one of the files is missing, a default is used.</p>
+<p>The notifier will try to append <code>portal_password.subject</code>, <code>portal_password.body</code>, <code>portal_password.html</code> to compose the email subject, text body and HTML body, respectively. If one of the files is missing, a default is used.</p>
 
-<p>Note: The files must contain Milk templates. The template will receive in particular the following parameters:</p>
+<p>The files must contain Milk templates. The template will receive in particular the following parameters:</p>
 
 <ul>
 <li>domain: the web domain used to create the account</li>
@@ -467,31 +472,38 @@ You should not have to modify these settings.</p>
 </ol>
 
 
-<p>Installation note: this is not enabled by default even after you install the ccnq3-traces package.</p>
+<p>Installation note: this is not enabled by default even after you install the ccnq3-traces package.
+You must specify which interfaces will be used for traces by using the <code>traces.interfaces</code> array.</p>
 
 <ul>
-<li><p>traces:</p>
+<li><p><code>traces</code>:</p>
 
 <ul>
-<li><p>interfaces: [] of interfaces names</p>
+<li><code>interfaces</code>: [] of interfaces names</li>
+</ul>
+
 
 <p>There's no reason to modify the following parameters for traces.</p>
 
 <ul>
-<li>filesize: integer, maximum size of the sniffer traces (in ko), defaults to 10000</li>
-<li>ringsize: integer, maximum number of sniffer trace files, defaults to 50</li>
-<li>workdir: string, directory used to store the traces, defaults to /opt/ccnq3/traces</li>
-<li>filter: string, pcap filter for traces, defaults to ports used by ccnq3 applications</li>
+<li><code>filesize</code>: integer, maximum size of the sniffer traces (in ko) [default: 10000]</li>
+<li><code>ringsize</code>: integer, maximum number of sniffer trace files [default: 50]</li>
+<li><code>workdir</code>: string, directory used to store the traces [default: "/opt/ccnq3/traces"]</li>
+<li><code>filter</code>: string, pcap filter for traces [default: ports used by ccnq3 applications]</li>
 </ul>
-</li>
-<li><p>run: {} of traces to run; the index is the TCP port number; content:</p>
+
+
+<p>To obtain data from the trace files, use <code>traces.run</code>.</p>
 
 <ul>
-<li>to_user     string; To username (destination number)</li>
-<li>from_user   string; From username (calling number)</li>
-<li>call_id     string; Call-ID</li>
-<li>days_ago    integer; only lookup for this number of days ago (0 = today)</li>
-<li>format      string; either 'pcap' or 'json'</li>
+<li><p><code>run</code>: {} of traces to run; the index is the TCP port number; content:</p>
+
+<ul>
+<li><code>to_user</code>     string; To username (destination number)</li>
+<li><code>from_user</code>   string; From username (calling number)</li>
+<li><code>call_id</code>     string; Call-ID</li>
+<li><code>days_ago</code>    integer; only lookup for this number of days ago (0 = today)</li>
+<li><code>format</code>      string; either 'pcap' or 'json'</li>
 </ul>
 
 
@@ -526,9 +538,9 @@ You should not have to modify these settings.</p>
       "sip.User-Agent"
   To obtain the complete data use the PCAP download.</p>
 
-<p>  Note: this type of request is highly CPU intensive for the target host.
-    It is only meant as a troubleshooting tool for administrators, not as a generically available service.
-    Use the cdr database to obtain per-call information as a generic service.</p></li>
+<p>  Application note: this type of request is highly CPU intensive for the target host.
+  It is only meant as a troubleshooting tool for administrators, not as a generically available service.
+  Use the cdr database to obtain per-call information as a generic service.</p></li>
 </ul>
 </li>
 </ul>
@@ -538,70 +550,101 @@ You should not have to modify these settings.</p>
 
 <p>Related: applications/registrant</p>
 
-<pre><code>registrant:
-  local_ipv4: string, IP where to send incoming calls
-  local_port: integer, port where to send incoming calls
-  remote_ipv4: string, upstream registrar
-  proxy_port: integer, the port for this SIP service [default: 5070]
+<ul>
+<li><p><code>registrant</code>:</p>
 
-sip_commands.registrant: string
-  One of:
+<ul>
+<li><p><code>local_ipv4</code>: string, IP where to send incoming calls</p></li>
+<li><p><code>local_port</code>: integer, port where to send incoming calls</p></li>
+<li><p><code>remote_ipv4</code>: string, upstream registrar</p></li>
+<li><p><code>proxy_port</code>: integer, the port for this SIP service [default: 5070]</p></li>
+</ul>
+</li>
+<li><p><code>sip_commands.registrant</code>: string</p>
+
+<p>One of:
     "start"           Start the registrant server.
-    "stop"            Stop the registrant server.
+    "stop"            Stop the registrant server.</p>
 
-Note: registrant entries (generated by using the "registrant_password" field in global numbers records) are
-      pushed into the registrant's process configuration as they appear; however they are not applied until
-      a "restart" command is issued.
-</code></pre>
+<p>Registrant entries (generated by using the <code>registrant_password</code> field in global numbers records) are
+pushed into the registrant's process configuration as they appear; however they are not applied until
+a <code>start</code> command is issued.</p></li>
+</ul>
 
-<h4>Specific to hosts running as emergency servers.</h4>
+
+<h3>Specific to hosts running as emergency servers.</h3>
 
 <p>Related: applications/emergency</p>
 
-<pre><code>emergency: {}
-  Note: the configuration hash may be empty, but needs to be present for the service to start.
-  proxy_port: integer, the port for this SIP service [default: 5072]
+<ul>
+<li><p><code>emergency</code>: {}</p>
 
-sip_commands.emergency: string
-  One of:
+<p>The configuration hash may be empty, but needs to be present for the service to start.</p>
+
+<ul>
+<li><code>proxy_port</code>: integer, the port for this SIP service [default: 5072]</li>
+</ul>
+</li>
+<li><p><code>sip_commands.emergency</code>: string</p>
+
+<p>One of:
     "start"           Start the emergency server.
-    "stop"            Stop the emergency server.
-</code></pre>
+    "stop"            Stop the emergency server.</p></li>
+</ul>
+
 
 <h3>Specific to hosts running voicemail</h3>
 
 <p>Voicemail is stored inside a user's own CouchDB database.
 This section specifies the parameters for applications/voicemail.</p>
 
-<pre><code>voicemail:
-  userdb_base_uri: string, required; the URI prefix (including authentication for the "voicemail manager") to a user's database
-  port: integer, optional; the (local) port for the voicemail ESL server [default: 7123]
-  min_duration: integer, optional; the minimal duration for a voicemail fragment [default: 5]
-  max_duration: integer, optional; the maximal duration for a voicemail fragment [default: 300]
-  default_language: language used if none is specified in the sip_profile [default: 'en']
-  number_domain: string; a domain used to identify local numbers [default: "local"]
-  record_streaming: boolean; if true stream recording of messages (only available with non-encapsulated formats such as "PCMU") [default: false]
-    Note: if false messages are first recorded on the local server then uploaded to the message store
-  playback_streaming: boolean; if true stream playback of messages [default: true]
-  format: string; voicemail message format [default: "wav"]
-    Note: see http://wiki.freeswitch.org/wiki/Mod_native_file for an explanation; meaningul values would be "PCMU" or "PCMA" in most cases.
-  max_parts: integer; the maximum number of segments/parts that might be recorded in a voicemail message [default: 1]
-  sender: string; the email address used to send email notifications from, if none is specified for a number.
-  file_base: string; a prefix used to locate the format files used by the email notifier.
-    Note: On Unix this string must be terminated by a slash.
-    Note: The notifier will attempt to append "voicemail_notification" or "voicemail_notification_with_attachment", then the user's language, then the component of the email message (subject, text body, or HTML body) and locate the appropriate files.
-      For example, for a notification without attachment using language 'en' the following suffix will be used:
-        voicemail_notification.en.subject, voicemail_notification.en.body, voicemail_notification.en.html
-    Note: If present, the content of those files will be used as Milk templates. The parameters will consist of the content of the voicemail message record. Especially the following parameters are available:
-      caller_id
-      timestamp
-    (See the "voicemail records" section below.)
+<ul>
+<li><p><code>voicemail</code>:</p>
 
-  callback:  Configuration to allow users to call the number that left a voicemail message
-    profile   "ingress-#{profile_name}" or "egress-#{profile_name}"
-    domain    the domain name where the message should be sent to
-    Note: if sending to a proxy, make sure the voicemail server has a matching endpoint record with "sbc" set to type 10 so that it is authorized to pass charging information along.
-</code></pre>
+<ul>
+<li><p><code>userdb_base_uri</code>: string, required; the URI prefix (including authentication for the "voicemail manager") to a user's database</p></li>
+<li><p><code>port</code>: integer, optional; the (local) port for the voicemail ESL server [default: 7123]</p></li>
+<li><p><code>min_duration</code>: integer, optional; the minimal duration for a voicemail fragment [default: 5]</p></li>
+<li><p><code>max_duration</code>: integer, optional; the maximal duration for a voicemail fragment [default: 300]</p></li>
+<li><p><code>default_language</code>: language used if none is specified in the sip_profile [default: 'en']</p></li>
+<li><p><code>number_domain</code>: string; a domain used to identify local numbers [default: "local"]</p></li>
+<li><p><code>record_streaming</code>: boolean;
+  if true stream recording of messages (only available with non-encapsulated formats such as "PCMU")
+  if false messages are first recorded on the local server then uploaded to the message store
+  [default: false]</p></li>
+<li><p><code>playback_streaming</code>: boolean; if true stream playback of messages [default: true]</p></li>
+<li><p><code>format</code>: string; voicemail message format [default: "wav"]</p>
+
+<p>See http://wiki.freeswitch.org/wiki/Mod_native_file for an explanation; meaningul values would be "PCMU" or "PCMA" in most cases.</p></li>
+<li><p><code>max_parts</code>: integer; the maximum number of segments/parts that might be recorded in a voicemail message [default: 1]</p></li>
+<li><p><code>sender</code>: string; the email address used to send email notifications from, if none is specified for a number.</p></li>
+<li><p><code>file_base</code>: string; a prefix used to locate the format files used by the email notifier.</p>
+
+<p>  On Unix this string must be terminated by a slash.</p>
+
+<p>  The notifier will attempt to append "voicemail_notification" or "voicemail_notification_with_attachment", then the user's language, then the component of the email message (subject, text body, or HTML body) and locate the appropriate files.
+  For example, for a notification without attachment using language 'en' the following suffix will be used:
+      voicemail_notification.en.subject, voicemail_notification.en.body, voicemail_notification.en.html</p>
+
+<p>  If present on the filesystem, the content of those files will be used as Milk templates.
+  The parameters will consist of the content of the voicemail message record.
+  Especially the following parameters are available:
+    caller_id
+    timestamp
+  (See the "voicemail records" section below.)</p></li>
+<li><p><code>callback</code>:  Configuration to allow users to call the number that left a voicemail message</p>
+
+<p>When sending to a proxy, make sure the voicemail server has a matching endpoint record with its "sbc" field set to type 10 so that it is authorized to pass charging information along.</p>
+
+<ul>
+<li><p><code>profile</code>   "ingress-#{profile_name}" or "egress-#{profile_name}"</p></li>
+<li><p><code>domain</code>    the domain name where the message should be sent to</p></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
 
 <h3>Specific to hosts running the cdrs (CDR aggregation) service.</h3>
 
@@ -615,10 +658,17 @@ on the target host, set "aggregate.cdrs_uri" to http://admin:password@target.exa
 on the source host, set "cdr_aggregate_uri" to http://host%40source.example.net@target.example.net/cdrs
 (both URIs point to the same database, but the authentication is different).</p>
 
-<pre><code>aggregate
-  cdrs_uri: string;  URI for the database where the CDRs should be aggregated [no default]
-    Note: the URI must contain authentication (it is used e.g. to create the database)
-</code></pre>
+<ul>
+<li><p><code>aggregate</code></p>
+
+<ul>
+<li><p><code>cdrs_uri</code>: string;  URI for the database where the CDRs should be aggregated [no default]</p>
+
+<p>  The URI must contain authentication (it is used e.g. to create the database)</p></li>
+</ul>
+</li>
+</ul>
+
 
 <h3>Specific to hosts running the locations (Location aggregation) service.</h3>
 
@@ -632,13 +682,17 @@ on the target host, set "aggregate.locations_uri" to http://admin:password@targe
 on the source host, set "opensips_proxy.usrloc_aggregate_uri" to http://host%40source.example.net@target.example.net/locations
 (both URIs point to the same database, but the authentication is different).</p>
 
-<pre><code>aggregate
-  locations_uri
-</code></pre>
+<ul>
+<li><p><code>aggregate</code></p>
 
-<h3>Other data in a "host" provisioning record.</h3>
+<ul>
+<li><code>locations_uri</code></li>
+</ul>
+</li>
+</ul>
 
-<h4>Attachments</h4>
+
+<h3>Attachments</h3>
 
 <p>Attachments of type "application/javascript" are executed after each change.
 The attachments might use any core Node.js modules.</p>
@@ -653,12 +707,13 @@ The attachments might use any core Node.js modules.</p>
 an OpenSIPS server will accept any domain listed here.
 (By default only sip_domain_name is accepted.)</p>
 
-<pre><code>_id: type+":"+domain
-account: ""    (the empty string)
+<ul>
+<li><p><code>_id</code>: type+":"+domain</p></li>
+<li><p><code>account</code>: ""    (the empty string)</p></li>
+<li><p><code>type</code>:"domain"</p></li>
+<li><p><code>domain</code>: string; the name of the DNS domain</p></li>
+</ul>
 
-type:"domain"
-domain: string; the name of the DNS domain
-</code></pre>
 
 <h3>ccnq3-dns service</h3>
 
@@ -666,19 +721,29 @@ domain: string; the name of the DNS domain
   In this case the "account" field is optional (which can only be done on the main provisioning database).
   The following fields are available:</p>
 
-<pre><code>ENUM: boolean; true if the domain is to be used to provide "number"-type records as a Carrier ENUM service
-ttl: integer, time-to-live for the records
-  Note: should be short for an ENUM domain.
-admin: optional string, the contact value of the domain's SOA [default: "hostmaster."+domain]
-records: [] of {}; the fields of the records are as follows:
-  prefix: a prefix to the domain (local name) [optional]
-  ttl: integer, individual record's ttl [overrides domain's default]
-  class: "A", "NS", etc. [default: "A"] (only "IN" classes are supported)
-  value: either a string (if only one value is provided, for example for A, CNAME, NS, etc.), or an array of response values.
-    An array value is used for example for SRV records or NAPTR records.
+<ul>
+<li><p><code>ENUM</code>: boolean; true if the domain is to be used to provide "number"-type records as a Carrier ENUM service</p></li>
+<li><p><code>ttl</code>: integer, time-to-live for the records</p>
 
-  Example:
-    records: [
+<p>  Application note: For an ENUM domain, the ttl will influence how the database changes are propagated. It is better to keep it low in that case.</p></li>
+<li><p><code>admin</code>: optional string, the contact value of the domain's SOA [default: "hostmaster."+domain]</p></li>
+<li><p><code>records</code>: [] of {}; the fields of the records are as follows:</p>
+
+<ul>
+<li><p><code>prefix</code>: a prefix to the domain (local name) [optional]</p></li>
+<li><p><code>ttl</code>: integer, individual record's ttl [overrides domain's default]</p></li>
+<li><p><code>class</code>: "A", "NS", etc. [default: "A"] (only "IN" classes are supported)</p></li>
+<li><p><code>value</code>: either a string (if only one value is provided, for example for A, CNAME, NS, etc.), or an array of response values.</p>
+
+<p>An array value is used for example for SRV records or NAPTR records.</p></li>
+</ul>
+</li>
+</ul>
+
+
+<p>Example:</p>
+
+<pre><code>    records: [
       {class:'NS', value:'ns1.example.net.'}
       {class:'NS', value:'ns2.example.net.'}
       {prefix:'s1',value:'192.168.1.10'}
@@ -688,174 +753,265 @@ records: [] of {}; the fields of the records are as follows:
     ]
 </code></pre>
 
-<p>  Note: "applications/dns" runs on port 53053. To allow remote hosts to access the application on port 53, install the ccnq3-dns package.</p>
+<p>By design "applications/dns" runs on port 53053. To allow remote hosts to access the application on port 53, install the ccnq3-dns package.</p>
 
 <h2>account_forwarder (provisioning records)</h2>
 
 <p>For non-trusted host that are allowed to submit P-Charge-Info, list of accounts they may submit.</p>
 
-<pre><code>_id: type+":"+account+'@'+endpoint
-account: account
+<ul>
+<li><code>_id</code>: type+":"+account+'@'+endpoint</li>
+<li><code>account</code>: account</li>
+<li><code>type</code>:"account_forwarder"</li>
+<li><code>endpoint</code>: endpoint</li>
+</ul>
 
-type:"account_forwarder"
-endpoint: endpoint
-</code></pre>
 
 <h2>endpoint (provisioning records)</h2>
 
-<pre><code>_id: type+":"+endpoint
-account: string
+<ul>
+<li><p><code>_id</code>: type+":"+endpoint</p></li>
+<li><p><code>account</code>: string</p></li>
+<li><p><code>type</code>:"endpoint"</p></li>
+<li><p><code>endpoint</code>: string, required; either a static IP, or a user@domain registration username</p>
 
-type:"endpoint"
-endpoint: string, required; either a static IP, or a user@domain registration username
-  Note: If a static IP, it must be identical to the user_ip field.
-  Note: If a registration endpoint, password, ha1, and ha1b are required.
+<p>If a static IP, it must be identical to the user_ip field.</p>
 
-### Registration endpoint:
-password: string; password used for authentication, or null if authentication not used
-ha1: authentication string; hex_md5([username,challenge,password].join(":"))
-ha1b: authentication string; hex_md5([username+'@'+challenge,challenge,password].join(":"))
-  Note: if the "challenge" configuration parameter is empty (the default), the domain name of the To: header (for REGISTER) or From: header (for other messages) is used as the challenge. In other words: normally the challenge should be the same as the domain name used for the endpoint.
+<p>If a registration endpoint, password, ha1, and ha1b are required.</p></li>
+</ul>
 
-### Static endpoint:
-user_ip         string  Static endpoint's IP address [required for static endpoints]
-  Note: must be identical to the endpoint field if used.
-user_port       integer Static endpoint's port number [optional]
-disabled        boolean If true, this IP is prevented from talking to the switch.
-  Note: used to build a black-list of IP addresses.
 
-### Inbound call routing (dst_endpoint)
-dest_domain     string  Override the destination domain with this value
-  Note: overrides user_srv and user_via
-  Note: probably obsolete
-dst_disabled    boolean If true, calls towards this endpoint are blocked
-strip_digit     boolean If true, remove the first digit of the destination username
-user_force_mp   boolean If true, attempt to force media_proxy insertion
-user_srv        string  Final user's domain (compatible with user_via)
-user_via        string  If present, calls are routed via this SBC
-  Note: this requires a type of SBC which has not yet been ported to ccnq3.
+<h3>Registration endpoint fields</h3>
 
-### Outbound call routing (src_endpoint)
-dialog_timer: integer; maximum call (dialog) duration (in seconds)
-outbound_route: integer; route to use for outbound calls from this endpoint; if null, per-number outbound_route is used
+<ul>
+<li><p><code>password</code>: string; password used for authentication, or null if authentication not used</p></li>
+<li><p><code>ha1</code>: authentication string; hex_md5([username,challenge,password].join(":"))</p></li>
+<li><p><code>ha1b</code>: authentication string; hex_md5([username+'@'+challenge,challenge,password].join(":"))</p></li>
+</ul>
 
-check_from      boolean If true, the call can only be placed if the endpoint for the number is the same as this endpoint. (Allows to restrict which caller_id is presented by an endpoint.)
-dest_domain     string  Override the destination domain
-sbc             integer This endpoint is an outbound SBC that sends calls to us towards a carrier.
-  # Our own outbound SBCs
-   1 SBC provides originator endpoint information as Sock-Info or source RURI param [outbound]
-   2 SBC provides account info in P-Charge-Info (no checks) [outbound] (for example, a client-sbc)
-  # Customer (outbound) SBCs
-  10 SBC provides account info in P-Charge-Info, account is checked against account_forwarder [outbound]
-inbound_sbc     integer This endpoint is an inbound SBC that sends calls to us from a carrier.
-  # Inbound SBCs
-   1 upstream SBC [inbound]
 
-location        string  An identifier for a location record
-  Note: might be overriden by the calling number's location.
-outbound_route  integer An identifier for a rule record's group_id
-src_disabled    boolean All outbound calls are disabled.
-  Note: Use outbound_route to allow some calls (e.g. emergency) and reject others.
-user_force_mp   boolean If true, attempt to force media_proxy insertion
+<p>If the "challenge" configuration parameter is empty (the default), the domain name of the To: header (for REGISTER) or From: header (for other messages) is used as the challenge. In other words: normally the challenge should be the same as the domain name used for the endpoint.</p>
 
-allow_onnet     boolean Obsolete; ccnq3 is not designed for allow_onnet.
-  Note: For allow_onnet to work you need to create separate "number" records for the client-side numbers so that the local OpenSIPS knows how to route them.
-        Routing can be done via a CFA, pointing e.g. to the ingress side of an open (inbound) carrier-sbc.
-  Note: Support for this feature might be removed at any time, do not depend on it.
+<h3>Static endpoint fields</h3>
 
-emergency_domain: string
-  Note: This domain is used when an outbound-proxy sends a query to an emergency server.
-    The emergency server will use this domain in its 302 Redirect response to the outbound-proxy.
-</code></pre>
+<ul>
+<li><p><code>user_ip</code>         string  Static endpoint's IP address [required for static endpoints]</p>
+
+<p>Must be identical to the endpoint field if used.</p></li>
+<li><p><code>user_port</code>       integer Static endpoint's port number [optional]</p></li>
+<li><p><code>disabled</code>        boolean If true, this IP is prevented from talking to the switch.
+(Used to build a black-list of IP addresses.)</p></li>
+</ul>
+
+
+<h3>Inbound call routing (dst_endpoint)</h3>
+
+<ul>
+<li><p><code>dest_domain</code>     string  Override the destination domain with this value</p>
+
+<p>Overrides user_srv and user_via</p>
+
+<p>Probably obsolete, do not use.</p></li>
+<li><p><code>dst_disabled</code>    boolean If true, calls towards this endpoint are blocked</p></li>
+<li><p><code>strip_digit</code>     boolean If true, remove the first digit of the destination username</p></li>
+<li><p><code>user_force_mp</code>   boolean If true, attempt to force media_proxy insertion</p></li>
+<li><p><code>user_srv</code>        string  Final user's domain (compatible with user_via)</p></li>
+<li><p><code>user_via</code>        string  If present, calls are routed via this SBC</p>
+
+<p>Usage note: This requires a type of SBC which has not yet been ported to ccnq3.</p></li>
+</ul>
+
+
+<h3>Outbound call routing (src_endpoint)</h3>
+
+<ul>
+<li><p><code>dialog_timer</code>: integer; maximum call (dialog) duration (in seconds)</p></li>
+<li><p><code>outbound_route</code>: integer; route to use for outbound calls from this endpoint; if null, per-number outbound_route is used</p></li>
+<li><p><code>check_from</code>      boolean If true, the call can only be placed if the endpoint for the number is the same as this endpoint. (Allows to restrict which caller_id is presented by an endpoint.)</p></li>
+<li><p><code>dest_domain</code>     string  Override the destination domain</p>
+
+<p>Overrides user_srv and user_via</p>
+
+<p>Probably obsolete, do not use.</p></li>
+<li><p><code>sbc</code>             integer This endpoint is an outbound SBC that sends calls to us towards a carrier.</p>
+
+<p>Our own outbound SBCs</p>
+
+<ul>
+<li>1: SBC provides originator endpoint information as Sock-Info or source RURI param</li>
+<li>2: SBC provides account info in P-Charge-Info (no checks) (for example, a client-sbc)</li>
+</ul>
+
+
+<p>Customer outbound SBCs</p>
+
+<ul>
+<li>10: SBC provides account info in P-Charge-Info, account is checked against account_forwarder</li>
+</ul>
+</li>
+<li><p><code>inbound_sbc</code>     integer This endpoint is an inbound SBC that sends calls to us from a carrier.</p>
+
+<p>Our own inbound SBCs</p>
+
+<ul>
+<li>1: upstream SBC [inbound]</li>
+</ul>
+</li>
+<li><p><code>location</code>        string  An identifier for a location record</p>
+
+<p>Might be overriden by the calling number's location.</p></li>
+<li><p><code>outbound_route</code>  integer An identifier for a rule record's group_id</p></li>
+<li><p><code>src_disabled</code>    boolean All outbound calls are disabled.</p>
+
+<p>Use outbound_route to allow some calls (e.g. emergency) and reject others.</p></li>
+<li><p><code>user_force_mp</code>   boolean If true, attempt to force media_proxy insertion</p></li>
+<li><p><code>allow_onnet</code>     boolean Obsolete; ccnq3 is not designed for allow_onnet.</p>
+
+<p>For allow_onnet to work you need to create separate "number" records for the client-side numbers so that the local OpenSIPS knows how to route them.
+Routing can be done via a CFA, pointing e.g. to the ingress side of an open (inbound) carrier-sbc.</p>
+
+<p>Support for this feature might be removed at any time, do not depend on it.</p></li>
+<li><p><code>emergency_domain</code>: string</p>
+
+<p>This domain is used when an outbound-proxy sends a query to an emergency server.
+The emergency server will use this domain in its 302 Redirect response to the outbound-proxy.</p></li>
+</ul>
+
 
 <h2>number (provisioning records)</h2>
 
-<pre><code>_id: type+":"+number
-account: string [required]
+<ul>
+<li><p><code>_id</code>: type+":"+number</p></li>
+<li><p><code>account</code>: string [required]</p></li>
+<li><p><code>type</code>:"number"</p></li>
+<li><p><code>number</code>: string</p>
 
-type:"number"
-number: string
-  For global numbers (between a carrier-sbc and a client-sbc), formatted as "E.164-without-plus".
-  For client-side local-numbers, a locally-formatted number @ the server's "number_domain".
+<p>  For global numbers (between a carrier-sbc and a client-sbc), formatted as "E.164-without-plus".</p>
 
-# Global-number properties:
-inbound_uri: string (URI)  a URI used by an outbound-proxy to bypass LCR and route a number directly, or an inbound Carrier SBC to route the number.
-  Note: these are used to build Carrier ENUM records.
-outbound_route: integer; allows to select a specific rule based on the rule's groupid
+<p>  For client-side local-numbers, a locally-formatted number @ the server's "number_domain".</p></li>
+</ul>
 
-registrant_password: password for applications/registrant
-  Note: you must issue a "restart" registrant command for the changes to be applied.
-# FIXME: need registrant_sip_domain
 
-# Local-number properties:
-endpoint [required]
-location:  string; the location identifier for this specific number (used for emergency location services)
-  Note: if present, overrides the endpoint's location.
-cfa:  string, URI; if present, all calls are forwarded to this URI
-cfb:  string, URI; if present, busy calls are forwarded to this URI
-cfda: string, URI; if present, unanswered calls are forwarded to this URI
-cfnr: string, URI; if present, non-registered endpoints are forwarded to this URI
-dialog_timer: integer; maximum call duration
-inv_timer: integer; maximum ringback duration
+<h3>Global-number properties</h3>
 
-privacy: boolean
-  if true, a Privacy: id (mask calling number) header is added to outbound calls
-asserted_number: string
-  if present, a P-Asserted-Identity (Caller-ID) header is added to outbound calls
+<ul>
+<li><p><code>inbound_uri</code>: string (URI)  a URI used by an outbound-proxy to bypass LCR and route a number directly, or an inbound Carrier SBC to route the number.</p>
 
-reject_anonymous: boolean
-  if true, reject anonymous inbound calls
-use_blacklist: boolean
-  if true, reject inbound calls from the blacklist
-use_whitelist: boolean
-  if true, reject inbound calls from the whitelist
+<p>These are used to build Carrier ENUM records.</p></li>
+<li><p><code>outbound_route</code>: integer; allows to select a specific rule based on the rule's groupid</p></li>
+<li><p><code>registrant_password</code>: password for applications/registrant</p>
 
-user_database:  string; the name of the user's own CouchDB instance (for the user who "owns" this number)
-  Note: this is used by the voicemail system to locate the voicemail_settings record and record or playback voicemail
-  messages.
+<p>You must issue a <code>start</code> registrant command for the changes to be applied.</p>
 
-voicemail_sender: string; the email address used to send out voicemail notifications for this number
-  Note: if not present, the "voicemail.sender" configuration parameter of the host running voicemail is used.
-    If neither are present, the recipient's email address is used as as stop-gap.
-</code></pre>
+<h1>FIXME: need registrant_sip_domain</h1></li>
+</ul>
+
+
+<h3>Local-number properties</h3>
+
+<ul>
+<li><p><code>endpoint</code> [required]</p></li>
+<li><p><code>location</code>:  string; the location identifier for this specific number (used for emergency location services)</p>
+
+<p>If present, overrides the endpoint's location.</p></li>
+<li><p><code>cfa</code>:  string, URI; if present, all calls are forwarded to this URI</p></li>
+<li><p><code>cfb</code>:  string, URI; if present, busy calls are forwarded to this URI</p></li>
+<li><p><code>cfda</code>: string, URI; if present, unanswered calls are forwarded to this URI</p></li>
+<li><p><code>cfnr</code>: string, URI; if present, non-registered endpoints are forwarded to this URI</p></li>
+<li><p><code>dialog_timer</code>: integer; maximum call duration</p></li>
+<li><p><code>inv_timer</code>: integer; maximum ringback duration</p></li>
+<li><p><code>privacy</code>: boolean</p>
+
+<p>If true, a Privacy: id (mask calling number) header is added to outbound calls</p></li>
+<li><p><code>asserted_number</code>: string</p>
+
+<p>If present, a P-Asserted-Identity (Caller-ID) header is added to outbound calls</p></li>
+<li><p><code>reject_anonymous</code>: boolean</p>
+
+<p>If true, reject anonymous inbound calls</p></li>
+<li><p><code>use_blacklist</code>: boolean</p>
+
+<p>If true, reject inbound calls from the blacklist</p></li>
+<li><p><code>use_whitelist</code>: boolean</p>
+
+<p>If true, reject inbound calls from the whitelist</p></li>
+<li><p><code>user_database</code>:  string; the name of the user's own CouchDB instance (for the user who "owns" this number)</p>
+
+<p>This database is used by the voicemail system to locate the voicemail_settings record and record or playback voicemail
+messages.</p></li>
+<li><p><code>voicemail_sender</code>: string; the email address used to send out voicemail notifications for this number</p>
+
+<p>If not present, the "voicemail.sender" configuration parameter of the host running voicemail is used.
+If neither are present, the recipient's email address is used as as stop-gap.</p></li>
+</ul>
+
 
 <h2>whitelist/blacklist (provisioning records)</h2>
 
 <p>A local number may reject or accept calls from specific numbers.</p>
 
-<pre><code>_id: type+':'+number+'@'+calling_number
-type: 'list'
-number: string; a local number '@' number_domain
-calling_number: string; a locally-formatted calling number
+<ul>
+<li><p><code>_id</code>: type+':'+number+'@'+calling_number</p></li>
+<li><p><code>type</code>: 'list'</p></li>
+<li><p><code>number</code>: string; a local number '@' number_domain</p></li>
+<li><p><code>calling_number</code>: string; a locally-formatted calling number</p></li>
+<li><p><code>blacklist</code>: boolean</p></li>
+<li><p><code>whitelist</code>: boolean</p></li>
+</ul>
 
-blacklist: boolean
-whitelist: boolean
-  must be true for the action to be taken
-</code></pre>
+
+<p>Either (or both) of <code>blacklist</code> and/or <code>whitelist</code> must be true for the matching action to be taken.</p>
 
 <h2>rule (aka outbound_route) (provisioning records)</h2>
 
-<pre><code>_id: type+":"+rule
-account: ""    (the empty string)
+<p>Rules are used to route outbound calls in OpenSIPS.</p>
 
-type:"rule"
-rule: host+":"+ruleid
-host: the host on which OpenSIPS is running and using this rule/outbound_route
-ruleid: integer; a unique ID for this rule (a sequential or random number)
-  Note: the ruleid is used rather than a longer, composed key, which should have groupid, prefix, timerec, and priority.
-</code></pre>
+<p>The selection part of the rule is first matched to select one rule out of all the available rules.</p>
+
+<p>Once that route is selected, the call is forwarded to the destination gateways for that rule.</p>
+
+<p>Additionally the <code>attrs</code> field is available in the CDRs.
+This feature can be used for example to store rating information so that they do not need to be looked up again (using longest-prefix match) at rating time.</p>
+
+<p>Operational note:
+Changes to rules and gateways are not applied automatically. Use sip_commands.opensips = "reload routes" (or the equivalent portal action) to apply the changes.</p>
+
+<h3>Rule identifiers</h3>
+
+<ul>
+<li><p><code>_id</code>: type+":"+rule</p></li>
+<li><p><code>account</code>: ""    (the empty string)</p></li>
+<li><p><code>type</code>: "rule"</p></li>
+<li><p><code>rule</code>: host+":"+ruleid</p></li>
+<li><p><code>host</code>: the host on which OpenSIPS is running and using this rule/outbound_route</p></li>
+<li><p><code>ruleid</code>: integer; a unique ID for this rule (a sequential or random number)</p>
+
+<p>The ruleid is used rather than a longer, composed key, which should have groupid, prefix, timerec, and priority.</p></li>
+</ul>
+
+
+<h3>Rule selection</h3>
 
 <p>The following four fields are used to select a rule.
 The set of applicable rules is narrowed down as each field is applied in order.</p>
 
-<pre><code>groupid: integer; this is the "outbound_route" of the endpoint (or of the the number, if the endpoint does not provide an "outbound_route")
-  Note: although it seems OpenSIPS might support having one or more groupid for a given rule we currently do not support this option.
-prefix: string; the routing (destination number) prefix (might be ""), longest-prefix match
-timerec: string; a time specification
-priority: integer; ruleset ordering criteria (within the groupid and prefix, for matching timerecs, the rule with the highest priority is chosen)
-</code></pre>
+<ul>
+<li><p><code>groupid</code>: integer; this is the "outbound_route" of the endpoint (or of the the number, if the endpoint does not provide an "outbound_route")</p>
+
+<p> Although it seems OpenSIPS might support having one or more groupid for a given rule we currently do not support this option.</p></li>
+<li><p><code>prefix</code>: string; the routing (destination number) prefix (might be ""), longest-prefix match</p></li>
+<li><p><code>timerec</code>: string; a time specification</p></li>
+<li><p><code>priority</code>: integer; ruleset ordering criteria (within the groupid and prefix, for matching timerecs, the rule with the highest priority is chosen)</p></li>
+</ul>
+
 
 <p>At the end of the selection process, only one rule is selected.</p>
+
+<p>For the complete specification, see section <em>Routing Rule Processing</em> in <a href="http://www.opensips.org/html/docs/modules/1.7.x/drouting.html">http://www.opensips.org/html/docs/modules/1.7.x/drouting.html</a></p>
+
+<p>We use sort_order = 1, meaning that inside gwlist each semicolon delimits a group of gateways; each group contains a comma-delimited list of gateways. For each call, two gateways are selected at random in each group (groups are kept in the order they appear), and the call is then sequantially forked to each gateway.</p>
+
+<h3>Rule output</h3>
 
 <p>The following fields are the output of the selection process, and
 are used to route the call, once a rule has been selected.</p>
@@ -863,82 +1019,115 @@ are used to route the call, once a rule has been selected.</p>
 <p>The gateway list indicates which gateways (either "gateway" records or "egress_gwid" sip_profiles)
 are used to route the call.</p>
 
-<pre><code>gwlist: string; a comma- and semicolon-separated list of gateways
-</code></pre>
+<ul>
+<li><code>gwlist</code>: string; a comma- and semicolon-separated list of gateways</li>
+</ul>
+
+
+<p>The following output field is present in the call's CDR as "ccnq_attrs" on outbound calls.</p>
+
+<ul>
+<li><code>attrs</code>: string, required; set it to anything you'd like, or "" (the empty string) if you do not use it.</li>
+</ul>
+
 
 <p>The following two (output) fields are required even though they are not currently used.</p>
 
-<pre><code>routeid: 0   (the integer 0)
-attrs: ""
-  The "attrs" field is present in the call CDR as "ccnq_attrs" on outbound calls.
+<ul>
+<li><code>routeid</code>: 0   (the integer 0)</li>
+</ul>
 
-Note: For the complete specification, see http://www.opensips.org/html/docs/modules/1.7.x/drouting.html#id293582
-
-Note: We use sort_order = 1, meaning that inside gwlist each semicolon delimits a group of gateways; each group contains a comma-delimited list of gateways. For each call, two gateways are selected at random in each group (groups are kept in the order they appear), and the call is then sequantially forked to each gateway.
-</code></pre>
-
-<p>Note: Changes to rules and gateways are not applied automatically. Use sip_commands.opensips = "reload routes" (or the equivalent portal action) to apply the changes.</p>
 
 <h2>emergency (provisioning records)</h2>
 
 <p>This is currently used to implement a French emergency call router.</p>
 
-<p>The trigger (destination) number uses the format: number#routing_data</p>
+<p>These records are used by the <code>applications/emergency</code> application.</p>
 
-<p>  _id: type + ":" + number + "#" + routing_data
-  type: "emergency"
-  number: string; [for example local number "112", or global number "330112"]
-  routing_data: string, matching the routing_data field of the location record.
-    Note: In France this would be the INSEE code of the commune.</p>
+<ul>
+<li><p><code>_id</code>: type + ":" + number + "#" + routing_data</p></li>
+<li><p><code>type</code>: "emergency"</p></li>
+<li><p><code>number</code>: string</p>
 
-<p>  destination: string; a target phone number expressed in the emergency_domain of the server that sent the request.
-    Note: this means that the Contact URI returned in the 302 message will consist of destination@emergency_domain.</p>
+<p>  In France this could for example be a local number "112", or (more probably) a global number "330112".</p>
+
+<p>  Implementation note:
+  The prefix "330" is used in our French dialplan to allow OpenSIPS to route emergency calls using its standard Least Cost Routing module,
+  which does not allow anything but digits as the routing element.</p></li>
+<li><p><code>routing_data</code>: string, matching the routing_data field of the location record.</p>
+
+<p>  In France this would be the INSEE code of the commune.</p></li>
+<li><p><code>destination</code>: string; a target phone number expressed in the emergency_domain of the server that sent the request.</p>
+
+<p>  The Contact URI returned by the emergency sever in its 302 message will consist of <code>destination</code>@<code>emergency_domain</code>.</p>
+
+<p>  The <code>emergency_domain</code> used is the one found in the <code>endpoint</code> record for the host that sent the INVITE message to
+  the emergency server.</p></li>
+</ul>
+
 
 <h2>gateway (provisioning records)</h2>
 
-<pre><code>_id: type+":"+gateway
-account: ""    (the empty string)
+<p>Gateways are used by the Least Cost Rules as targets for call routing.</p>
 
-type:"gateway"
-gateway: sip_domain_name+":"+gwid
-sip_domain_name: the sip_domain_name of the hosts on which OpenSIPS is running and using this gateway
-gwid: integer; a unique identifier for the gateway inside this sip_domain_name; used in the "gwlist" field of the "rule" record
+<p>You do not need to create gateway records for sip_profiles which have an <code>egress_gwid</code> field, these are created automatically using the host's <code>sip_domain_name</code> and the <code>egress_gwid</code>. (They will not show up in the database but will be accessible to all the OpenSIPS hosts within that sip_domain_name.)
+This feature means that you normally should not have to manually create <code>gateway</code>-type records for Least Cost Routing, since all the interesting records should be created automatically.</p>
 
-address: the address of the gateway (IP, IP:port, etc.)
+<p>However you will have to create gateway records for calls that to servers in a different <code>sip_domain_name</code> such as voicemail servers or emergency servers.</p>
 
-# The following fields are required even though they are not currently used.
-gwtype: 0   (the integer 0)
+<p>Changes to rules and gateways are not applied automatically. Use sip_commands.opensips = "reload routes" (or the equivalent portal action) to apply the changes.</p>
 
-# The following fields are required, and might be used at your convenience, although we only test the values shown here.
-probe_mode: 0
-strip: 0
+<ul>
+<li><p><code>_id</code>: type+":"+gateway</p></li>
+<li><p><code>account</code>: ""    (the empty string)</p></li>
+<li><p><code>type</code>: "gateway"</p></li>
+<li><p><code>gateway</code>: sip_domain_name+":"+gwid</p></li>
+<li><p><code>sip_domain_name</code>: the sip_domain_name of the hosts on which OpenSIPS is running and using this gateway</p></li>
+<li><p><code>gwid</code>: integer; a unique identifier for the gateway inside this sip_domain_name; used in the "gwlist" field of the "rule" record</p></li>
+<li><p><code>address</code>: the address of the gateway (IP, IP:port, etc.)</p></li>
+</ul>
 
-# The following fields are optional
-pri_prefix:  string
-description:  string
 
-Note: for probe_mode, the following modes are available:
+<p>The following fields are required even though they are not currently used.</p>
+
+<ul>
+<li><code>gwtype</code>: 0   (the integer 0)</li>
+</ul>
+
+
+<p>The following fields are required, and might be used at your convenience, although we only test the values shown here.</p>
+
+<ul>
+<li><p><code>probe_mode</code>: 0</p>
+
+<p>The following modes are available:
   0: no probing
   1: probing only when disabled (however our scripts do not use dr_disable())
-  2: probing at all times
-Note: Changes are not applied automatically. Use sip_commands.opensips = "reload routes" to apply the changes.
-</code></pre>
+  2: probing at all times</p></li>
+<li><p><code>strip</code>: 0</p></li>
+</ul>
 
-<p>Note: You do not need to create gateway records for sip_profiles which have an "egress_gwid" field, these are created automatically using the host's sip_domain_name and the egress_gwid. (They will not show up in the database but will be accessible to all the OpenSIPS hosts within that sip_domain_name.)
-This feature means that you normally should not have to manually create "gateway"-type records, since all the interesting records should be created automatically.</p>
 
-<p>Note: Changes to rules and gateways are not applied automatically. Use sip_commands.opensips = "reload routes" (or the equivalent portal action) to apply the changes.</p>
+<p>The following fields are optional</p>
+
+<ul>
+<li><p><code>pri_prefix</code>:  string</p></li>
+<li><p><code>description</code>:  string</p></li>
+</ul>
+
 
 <h2>location (provisioning records)</h2>
 
-<pre><code>_id: type+":"+location
-account: string
+<ul>
+<li><p><code>_id</code>: type+":"+location</p></li>
+<li><p><code>account</code>: string</p></li>
+<li><p><code>type</code>: "location"</p></li>
+<li><p><code>location</code>:  string; a unique identifier for this location</p></li>
+<li><p><code>routing_data</code>:  string; specific to the emergency routing system used</p>
 
-type:"location"
-location:  string; a unique identifier for this location
-routing_data:  string; specific to the emergency routing system used
-  Note: In France this would be the INSEE code of the commune.
-</code></pre>
+<p>In France this would be the INSEE code of the commune.</p></li>
+</ul>
+
 
 <h1>_users database</h1>
 
@@ -946,41 +1135,66 @@ routing_data:  string; specific to the emergency routing system used
 
 <h2>user records</h2>
 
-<pre><code>_id:"org.couchdb.user:"+name
-type:"user"
-name:  string; the username
-password_sha:  string; sha1_hex(password+salt)
-salt:  string; a random string
-user_database:  string; the name of the user's own CouchDB instance
-roles: [] of string
-domain:  string; name of the domain used at registration time
-profile:
-  name:  string; user's full name
-  email:  string or array of strings; email or email addresses for this user
-  phone:  string; phone number for this user
-  userdb_base_uri:  base URI (to which the user_database is concatenated)
-  user_name: name
-  user_database: user_database
-</code></pre>
+<p>This is a standard CouchDB _users record with some additions.
+You normally do not need to manipulate these records directly;
+using the registration and password recovery options of the web portal will do this for you.</p>
 
-<p>  Notes: This is a standard CouchDB <em>users record with some additions.
-  Notes: The "profile" hash is returned by a GET /u/profile.json once logged-in.
-  Notes: The "name" field is normally the user's main email address (at least that's what the registration code assumes); servers and applications will also have </em>users records so that they can remotely access the main database.
-  Notes: Servers should have the "host" role assigned.
-  Notes: The roles hash can also be manipulated using the REST API in applications/roles.</p>
+<p>The <code>profile</code> hash is returned by a GET /u/profile.json once logged-in.</p>
+
+<p>The <code>name</code> field is normally the user's main email address (at least that's what the registration code assumes); servers and applications will also have _users records so that they can remotely access the main database.</p>
+
+<p>The <code>roles</code> hash can also be manipulated using the REST API in applications/roles.</p>
+
+<ul>
+<li><code>_id</code>: "org.couchdb.user:"+name</li>
+<li><code>type</code>: "user"</li>
+<li><code>name</code>:  string; the username</li>
+<li><code>password_sha</code>:  string; sha1_hex(password+salt)</li>
+<li><code>salt</code>:  string; a random string</li>
+<li><code>user_database</code>:  string; the name of the user's own CouchDB instance</li>
+<li><code>roles</code>: [] of string</li>
+<li><code>domain</code>:  string; name of the domain used at registration time</li>
+<li><code>profile</code>:
+
+<ul>
+<li><code>name</code>:  string; user's full name</li>
+<li><code>email</code>:  string or array of strings; email or email addresses for this user</li>
+<li><code>phone</code>:  string; phone number for this user</li>
+<li><code>userdb_base_uri</code>:  base URI (to which the user_database is concatenated)</li>
+<li><code>user_name</code>: name</li>
+<li><code>user_database</code>: user_database</li>
+</ul>
+</li>
+</ul>
+
 
 <h2>host records</h2>
 
-<p>  _id:"org.couchd.user:"+name
-  type:"user"
-  name:"host@" + hostname
-  password_sha
-  salt
-  roles: ["host"]</p>
+<p>These records are used to allow hosts (servers) within the system access to some functionality:
+* replicate the provisioning database from the master to their local copies;
+* replicate their local CDRs onto a master CDR database;
+* replicate their local database of user locations onto a master <code>locations</code> database.</p>
+
+<p>The records follow the format outlined in the previous section.
+They are documented here separately for convenience.</p>
+
+<p>Servers should have the <code>host</code> role assigned.</p>
+
+<ul>
+<li><code>_id</code>: "org.couchd.user:"+name</li>
+<li><code>type</code>: "user"</li>
+<li><code>name</code>: "host@" + hostname</li>
+<li><code>password_sha</code></li>
+<li><code>salt</code></li>
+<li><code>roles</code>: ["host"]</li>
+</ul>
+
 
 <h1>usercode database</h1>
 
 <p>This database should only contain design documents which are replicated into each user's private database when the user logs in.</p>
+
+<p>Usercode documents are normally installed automatically by the applications that require or provide them.</p>
 
 <h1>endpoint-location database</h1>
 
@@ -988,64 +1202,122 @@ profile:
 (In other words you should not attempt to modify them.)
 They are updated by OpenSIPS.</p>
 
+<p>There should be one location database local to each OpenSIPS server that provides registration services.</p>
+
+<p>Additionally the locations records might be aggregated in a central <code>locations</code> database, see the documentation for <code>locations_aggregate_uri</code>.</p>
+
 <h2>endpoint-location records</h2>
 
-<pre><code>_id: username+"@"+domain (registration username)
-username: string; username part of the registration username@domain
-domain: string; domain part of the registration username@domain
-# Information received from the client
-callid: string
-contact: string
-cseq: integer
-q: integer (-1 if none is provided by the endpoint)
-user_agent: string
-# Information stored by the server to manage the registration
-last_modified: string (datetime, UTC)
-expires: string (datetime, UTC)
-received: string (IP:port from which the registration packet originated)
-socket: string (IP:port on which we received the registration packet)
-methods: integer
-path: string
-cflags: integer
-flags: 0
-</code></pre>
+<p>Identifier</p>
+
+<ul>
+<li><code>id</code>: username+"@"+domain (registration username)</li>
+<li><code>username</code>: string; username part of the registration username@domain</li>
+<li><code>domain</code>: string; domain part of the registration username@domain</li>
+</ul>
+
+
+<p>Information received from the client</p>
+
+<ul>
+<li><code>callid</code>: string</li>
+<li><code>contact</code>: string</li>
+<li><code>cseq</code>: integer</li>
+<li><code>q</code>: integer (-1 if none is provided by the endpoint)</li>
+<li><code>user_agent</code>: string</li>
+</ul>
+
+
+<p>Information stored by the server to manage the registration</p>
+
+<ul>
+<li><code>last_modified</code>: string (datetime, UTC)</li>
+<li><code>expires</code>: string (datetime, UTC)</li>
+<li><code>received</code>: string (IP:port from which the registration packet originated)</li>
+<li><code>socket</code>: string (IP:port on which we received the registration packet)</li>
+<li><code>methods</code>: integer</li>
+<li><code>path</code>: string</li>
+<li><code>cflags</code>: integer</li>
+<li><code>flags</code>: 0</li>
+</ul>
+
 
 <h1>user database</h1>
 
-<p>The user database may contain other records replicated from the user database,
-the usercode database, the provisioning database.</p>
+<p>Each user registered in the web portal is assigned a private <em>user database</em>.</p>
 
-<p>The following records however are specific to an individual user database and
-are not replicated.</p>
+<blockquote><p>Usage note: <em>user databases</em> are named using the convention "u"+UUID.
+If your application creates user databases make sure to follow that convention as well.</p>
+
+<p>Additionally, note that a single user database may be shared by multiple users.
+The web portal will always create a new user database for each registered user,
+but your application may do things differently.</p></blockquote>
+
+<p>A <em>user database</em> contains records replicated from the _users database,
+the usercode database, the provisioning database. These replicated records
+may also be replicated back (using the replicate API provided by applications/roles).
+Replication in both directions is restricted to records the user is authorized to
+access and/or update.</p>
+
+<p>Records replicated to/from other databases are documented as part of that database's documentation.</p>
+
+<p>A <em>user database</em> may additionally contain records which are never replicated to or from other databases.
+These records are described below.</p>
 
 <h2>voicemail_settings record</h2>
 
-<pre><code>_id: 'voicemail_settings'
-pin: string of digits; the user's voicemail PIN [optional]
-  Note: if no "pin" is specified then no authentication is required to access the voicemail box.
-language: language string for this user's voicemail
+<p>A user's voicemail settings are stored in this record.</p>
 
-email_notifications: hash; the key is the target email address; the values should be a hash containing:
-  attach_message: boolean; if true the voice message is sent along with the notification
+<ul>
+<li><p><code>_id</code>: 'voicemail_settings'</p></li>
+<li><p><code>pin</code>: string of digits; the user's voicemail PIN [optional]</p>
 
-_attachments:
-  prompt.wav  voicemail prompt
-  name.wav    name prompt
-</code></pre>
+<p>If no "pin" is specified then no authentication is required to access the voicemail box.</p></li>
+<li><p><code>language</code>: language string for this user's voicemail</p></li>
+<li><p><code>email_notifications</code>: hash; the key is the target email address; the values should be a hash containing:</p>
+
+<ul>
+<li><code>attach_message</code>: boolean; if true the voice message is sent along with the notification</li>
+</ul>
+</li>
+<li><p><code>_attachments</code>:</p>
+
+<ul>
+<li><code>prompt.wav</code>  voicemail prompt</li>
+<li><code>name.wav</code>    name prompt</li>
+</ul>
+</li>
+</ul>
+
 
 <h2>voicemail records</h2>
 
-<pre><code>_id: type + timestamp + caller_id
-type: 'voicemail'
-timestamp: string; JSON timestamp e.g. "2012-02-13T14:05:21.247Z"
-caller_id: string; caller_id
-box: string; 'new' or 'archive'
+<p>Each new voicemail message is stored in an individual voicemail record.</p>
 
-_attachments:
-  part1.wav
-  part2.wav
-  ...       The fragments of the message, in the order they were recorded.
-</code></pre>
+<ul>
+<li><p><code>_id</code>: type + timestamp + caller_id</p></li>
+<li><p><code>type</code>: 'voicemail'</p></li>
+<li><p><code>timestamp</code>: string; JSON timestamp e.g. "2012-02-13T14:05:21.247Z"</p></li>
+<li><p><code>caller_id</code>: string; caller_id</p></li>
+<li><p><code>box</code>: string; 'new' or 'archive'</p></li>
+<li><p><code>_attachments</code>:</p>
+
+<p>The fragments of the message, in the order they were recorded.</p>
+
+<ul>
+<li><code>part1.wav</code></li>
+<li><code>part2.wav</code></li>
+<li>etc.</li>
+</ul>
+
+
+<p>The message may contain no fragments if none was recorded or it was too short.</p>
+
+<p>By default (<code>max_parts</code> == 1) only one fragment is recorded, so only <code>part1.wav</code> might be present.</p>
+
+<p>The filename extension depends on the voicemail server's <code>format</code> setting. It defaults to <code>wav</code>.</p></li>
+</ul>
+
 
 </div>
 
@@ -1076,8 +1348,8 @@ Links:
 
 
 <div class="pagedate">
-Last edited <span class="date">Fri Mar 23 14:12:46 2012</span>
-<!-- Created <span class="date">Fri Mar 23 14:12:46 2012</span> -->
+Last edited <span class="date">Fri Mar 23 23:38:30 2012</span>
+<!-- Created <span class="date">Fri Mar 23 23:38:30 2012</span> -->
 </div>
 
 </div>
