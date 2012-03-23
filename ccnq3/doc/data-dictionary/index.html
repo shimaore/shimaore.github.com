@@ -51,16 +51,40 @@ data-dictionary
 <div id="content">
 <p>This document describes the configuration parameters for ccnq3.</p>
 
+<h1>Conventions</h1>
+
+<h2>Database URI</h2>
+
 <p>In this document the term <em>URI of database</em> signifies a URI of some CouchDB database,
-and is always a string.
-These URIs might contain authentication usernames and passwords.</p>
+and is always a string.</p>
+
+<p>These URIs might contain authentication usernames and passwords.</p>
+
+<h2>Account</h2>
+
+<p>In this document the term <em>account</em> refers to an opaque string
+used to authorize operations based on prefixes stored in the <code>roles</code>
+fields of a user account.</p>
+
+<p>Account-based roles follow the syntax
+  (<code>access</code>|<code>update</code>) <code>:</code> operation <code>:</code> account
+where operations include replicating documents, granting authorization, etc.</p>
+
+<p>This allows you (assuming you provide your customers access to the embedded
+web portal) to create hierarchical access to information, for example along
+a carrier/reseller/customer model.</p>
+
+<p>The account "" (the empty string), located at the root of the hierarchy, can be
+used to restrict access to provisioning data that should only be managed by
+system administrators. It is used in this manner in the following documentation.</p>
 
 <h1>provisioning database</h1>
 
 <p>The provisioning database contains the master copy of all provisioning information
-for an entire system.
-It contains different types of records, which can be identified by their "type" field.
-The type is also the first part of the records' identifier, to avoid collisions.</p>
+for an entire system.</p>
+
+<p>It contains different types of records, which can be identified by their "type" field.
+The type is also the first part of the records' identifier, to avoid identifier collisions.</p>
 
 <h2>host (aka config) provisioning records</h2>
 
@@ -68,10 +92,10 @@ The type is also the first part of the records' identifier, to avoid collisions.
 <code>/etc/ccnq3/host.json</code>, is a copy of the <code>host</code> record for that
 specific server as found in the master CouchDB provisioning database.</p>
 
-<p>There must be exactly one "host" record for each server in the system.
-Servers are identified by there (arbitrary) Full Qualified Domain Name (FQDN).</p>
+<p>There must be exactly one <code>host</code> record for each server in the system.
+Servers are identified by their (arbitrary) Fully Qualified Domain Name (FQDN).</p>
 
-<p>Most changes in this type of records might require you to:</p>
+<p>Most changes in <code>host</code> records might require you to:</p>
 
 <ul>
 <li><p>either restart the ccnq3 processes to apply the changes:</p>
@@ -90,26 +114,28 @@ the proper dependencies might be installed for the new application.</p></li>
 </ul>
 
 
-<p>However this does not apply to commands (such as the ones in "sip_commands"),
+<p>However this does not apply to commands (such as the ones in <code>sip_commands</code>),
 which are executed immediately.</p>
 
-<p>Please note that restarting, reinstalling, or submitting commands in a lot of
-cases will cause calls to disconnect. These operations are best used during
+<p>Operational note:
+In a lot of cases, restarting, reinstalling, or submitting commands
+will cause calls to disconnect. These operations are best used during
 dedicated maintenance windows and should be avoided during production use.</p>
 
 <p>Currently the main freeswitch, opensips, and medaproxy processes are not started by ccnq3.
 These processes might be controlled using their respective /etc/init.d/ scripts.</p>
 
-<p>Developper note: "host" records are referred to as the "config" record inside most applications.</p>
+<p>Developper note:
+As suggested above, the <code>host</code> record for a particuler server is referred to as the <code>config</code> record for that server inside most applications.</p>
 
 <h3>Common section (host provisioning record)</h3>
 
-<p>All the fields in this section are pre-populated by the various scripts.
+<p>All the fields in this section are pre-populated by the installation scripts.
 There is no reason to change them after the initial installation of a server.
-Only the "applications" array will need to be expanded.
-(This can be easily done using the web portal.)</p>
+Only the <code>applications</code> array will need to be expanded.
+This can be easily done using the web portal.</p>
 
-<p>Caveat: provisioning.host_couchdb_uri might need to be fixed if the system cannot guess
+<p>Installation caveat: <code>provisioning.host_couchdb_uri</code> might need to be fixed if the system cannot guess
 your installation.</p>
 
 <ul>
@@ -117,9 +143,13 @@ your installation.</p>
 <li><p><code>account</code>: ""    (the empty string)</p></li>
 <li><p>`updated_at: integer, update timestamp in ms [required]</p>
 
-<p><code>new Date().getTime()</code>  for example</p></li>
+<p><code>new Date().getTime()</code>  for example</p>
+
+<p>This field is automatically managed by the web portal when it is used to modify a host record.</p></li>
 <li><p><code>type</code>: "host"</p></li>
-<li><p><code>host</code>: string; hostname, preferably FQDN (must match what the "hostname" command returns)</p></li>
+<li><p><code>host</code>: string; hostname, preferably FQDN</p>
+
+<p>This value must match what the <code>hostname</code> command returns.</p></li>
 <li><p><code>interfaces</code>: {} of {}, fields:</p>
 
 <ul>
@@ -128,7 +158,7 @@ your installation.</p>
 </ul>
 
 
-<p>The key of the records must be unique, so they cannot just be the interface's name,
+<p>The keys of the records in the <code>interfaces</code> hash must be unique, so they cannot just be the interface's name,
 since an interface may have multiple v4 or v6 IP addresses.</p>
 
 <p>The key <code>primary</code> has a special meaning (see next item).</p></li>
@@ -1348,8 +1378,8 @@ Links:
 
 
 <div class="pagedate">
-Last edited <span class="date">Fri Mar 23 23:38:30 2012</span>
-<!-- Created <span class="date">Fri Mar 23 23:38:30 2012</span> -->
+Last edited <span class="date">Sat Mar 24 00:10:55 2012</span>
+<!-- Created <span class="date">Sat Mar 24 00:10:55 2012</span> -->
 </div>
 
 </div>
