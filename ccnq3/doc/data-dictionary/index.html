@@ -931,11 +931,14 @@ The emergency server will use this domain in its 302 Redirect response to the ou
 <li><p><code>outbound_route</code>: integer; allows to select a specific rule based on the rule's groupid</p></li>
 <li><p><code>registrant_password</code>: password for applications/registrant</p>
 
-<p>You must issue a <code>start</code> registrant command for the changes to be applied.</p>
+<p>You must issue a <code>start</code> registrant command for the changes to be applied.</p></li>
+<li><p><code>registrant_host</code>: host(s) where this registration should be effective</p>
 
-<h1>FIXME: need registrant_sip_domain</h1></li>
+<p>This parameter can actually be either a string (single host) or an array of strings (multiple hosts).</p></li>
 </ul>
 
+
+<p>Please note that for a number to use the registrant function, both <code>registrant_password</code> and <code>registrant_host</code> must be specified.</p>
 
 <h3>Local-number properties</h3>
 
@@ -1184,12 +1187,23 @@ using the registration and password recovery options of the web portal will do t
 <li><code>user_database</code>:  string; the name of the user's own CouchDB instance</li>
 <li><code>roles</code>: [] of string</li>
 <li><code>domain</code>:  string; name of the domain used at registration time</li>
-<li><code>profile</code>:
+<li><p><code>profile</code>:</p>
+
+<p>The default <code>profile</code> record contains the user's registration data along with user-accessible data
+that allows it to connect to its private database (user database).</p>
+
+<p>This record is returned by the <code>GET /u/profile.json</code> portal API to a logged-in user.</p>
 
 <ul>
 <li><code>name</code>:  string; user's full name</li>
 <li><code>email</code>:  string or array of strings; email or email addresses for this user</li>
 <li><code>phone</code>:  string; phone number for this user</li>
+</ul>
+
+
+<p>Other information may be stored but should not be relied upon.</p>
+
+<ul>
 <li><code>userdb_base_uri</code>:  base URI (to which the user_database is concatenated)</li>
 <li><code>user_name</code>: name</li>
 <li><code>user_database</code>: user_database</li>
@@ -1225,6 +1239,10 @@ They are documented here separately for convenience.</p>
 <p>This database should only contain design documents which are replicated into each user's private database when the user logs in.</p>
 
 <p>Usercode documents are normally installed automatically by the applications that require or provide them.</p>
+
+<p>Developper note:
+The default portal application locates usable design documents inside a user database by looking for an <code>index.html</code> attachment. The presence of this attachment indicates the design document is an application. The application is activated by running its <code>index.js</code> attachment.
+In the source code these <em>usercode applications</em> are located in <code>applications/*/couchapps/usercode/</code>.</p>
 
 <h1>endpoint-location database</h1>
 
@@ -1294,6 +1312,10 @@ access and/or update.</p>
 <p>A <em>user database</em> may additionally contain records which are never replicated to or from other databases.
 These records are described below.</p>
 
+<p>An application may create the database itself (server-side) using the standard CouchDB API, if it has database-level administrative access.
+An application may create the database (server-side or client-side) using the <code>GET /u/user-database.json</code> portal API for a logged-in user.
+The default portal will create the <em>user database</em> for a given user the first time the user logs in (by calling <code>GET /u/user-database.json</code>).</p>
+
 <h2>voicemail_settings record</h2>
 
 <p>A user's voicemail settings are stored in this record.</p>
@@ -1349,6 +1371,118 @@ These records are described below.</p>
 </ul>
 
 
+<h1>API</h1>
+
+<h2>CouchDB API</h2>
+
+<p>The CouchDB API is available to a server-side or client-side application.</p>
+
+<p>It may be accessed directly (typically on port 5984) or via the web application (typically on port 8080).</p>
+
+<h2>Portal API</h2>
+
+<p>The following REST URIs are provided by the portal API.</p>
+
+<p>Operational note: Both <code>applications/portal</code> and <code>applications/roles</code> must be activated on the portal server.</p>
+
+<p>The first API call should always be to the login application; session credentials are stored in a cookie on the client.</p>
+
+<ul>
+<li><p><code>POST /u/login.json</code></p>
+
+<p>Logs in to the portal.</p>
+
+<p>Parameters: <code>username</code>, <code>password</code></p>
+
+<p>Returns: {"ok":true} upon success, otherwise {"error":"error text"}</p></li>
+<li><p><code>POST /u/logout.json</code></p>
+
+<p>Logs out from the portal.</p>
+
+<p>Returns: {"ok":true}</p></li>
+<li><p><code>GET /u/profile.json</code></p>
+
+<p>Validates and returns the user's profile information.</p>
+
+<p>Validation means the <code>confirmed</code> role is added to the user's roles.</p>
+
+<p>Returns: a JSON record containing:</p>
+
+<ul>
+<li><code>name</code>:  string; the user's full name</li>
+<li><code>email</code>:  string or array of strings; email or email addresses for this user</li>
+<li><code>phone</code>:  string; phone number for this user</li>
+<li><code>userdb_base_uri</code>: string; base URI (to which the user_database is concatenated)</li>
+<li><code>user_name</code>: string; session username</li>
+<li><code>user_database</code>: string; user_database</li>
+</ul>
+</li>
+<li><p><code>POST /u/recover.json</code></p>
+
+<p>Triggers an email to the user with a new password.</p>
+
+<p>(The trigger is conveyed by the addition of <code>`"send_password":true</code> to the user's record.)</p>
+
+<p>Returns: either {"ok":true} or {"error":"error text"}</p></li>
+<li><p><code>PUT /u/register.json</code></p>
+
+<p>Creates a new user record.</p>
+
+<p>The username is assumed to be the <code>email</code> field.</p>
+
+<p>An error will occur if the username already exists.</p>
+
+<p>The user will automatically receive an email containing a new password.</p>
+
+<p>Parameters: <code>name</code>, <code>email</code></p>
+
+<p>Returns:  either {"ok":true} or {"error":"error text"}</p></li>
+<li><p><code>GET /u/user-database.json</code></p>
+
+<p>Creates a user's database.</p>
+
+<p>The user record must contain a <code>user_database</code> field.</p>
+
+<p>Returns: either {"ok":true} or {"error":"error text"}</p>
+
+<p>Application note: This API is available to allow a logged-in user to request its own database be created.
+Obviously this can be achieved by a <code>PUT</code> operation on the CouchDB database directly done by a database-administrator account.</p></li>
+<li><p><code>POST /roles/replicate/push/{target}</code></p>
+
+<p>Replicates from the user's database into the main database indicated by <code>target</code>.</p>
+
+<p>Returns: CouchDB json response or an {"error":} record.</p></li>
+<li><p><code>POST /roles/replicate/pull/{source}</code></p>
+
+<p>Replicates from a main database indicated by <code>source</code> into the user's database.</p>
+
+<p>Returns: CouchDB json response or an {"error":} record.</p></li>
+<li><p><code>GET /roles/traces/{host}/{port}</code></p>
+
+<p>Proxies data from an (internal) host and port.</p>
+
+<p>This operation is only available to users having the <code>access:traces:</code> role.</p>
+
+<p>Due to security concerns this role should be restricted to system administrators.</p>
+
+<p>Caveat: This API might be removed at any time, do not depend on it.</p></li>
+</ul>
+
+
+<h2>Web Application</h2>
+
+<p>The web application automatically provides unified access to:</p>
+
+<ul>
+<li><p>the portal application, including the Portal API described above and other portal documents;</p></li>
+<li><p>specific CouchDB APIs: <code>_session</code>, <code>_users</code>, <code>provisioning</code>, <code>cdr</code>, user databases, and other utilities;</p></li>
+<li><p>the <code>public</code> static files;</p></li>
+<li><p>a default application to bootstrap the portal.</p></li>
+</ul>
+
+
+<p>It is available on TCP port 8080 on the host on which <code>applications/web</code> is active.</p>
+
 </div>
 
 
@@ -1378,8 +1512,8 @@ Links:
 
 
 <div class="pagedate">
-Last edited <span class="date">Sat Mar 24 00:10:55 2012</span>
-<!-- Created <span class="date">Sat Mar 24 00:10:55 2012</span> -->
+Last edited <span class="date">Fri Mar 30 13:39:18 2012</span>
+<!-- Created <span class="date">Fri Mar 30 13:39:18 2012</span> -->
 </div>
 
 </div>
