@@ -1312,9 +1312,12 @@ access and/or update.</p>
 <p>A <em>user database</em> may additionally contain records which are never replicated to or from other databases.
 These records are described below.</p>
 
+<p>An application should create the database (server-side or client-side) using the <code>PUT /roles/userdb/{user_database}</code> portal API for a logged-in user.
+The default portal will create the <em>user database</em> for a given user the first time the user logs in (by calling <code>PUT /roles/userdb/{user_database}</code>).</p>
+
 <p>An application may create the database itself (server-side) using the standard CouchDB API, if it has database-level administrative access.
-An application may create the database (server-side or client-side) using the <code>GET /u/user-database.json</code> portal API for a logged-in user.
-The default portal will create the <em>user database</em> for a given user the first time the user logs in (by calling <code>GET /u/user-database.json</code>).</p>
+However databases created that way are world-readable; it is your responsability to ensure that the database will get proper security tokens.
+Therefor we recommend to directly use the <code>PUT /roles/userdb/{user_database}</code> API to make sure the database has the proper security tokens.</p>
 
 <h2>voicemail_settings record</h2>
 
@@ -1437,16 +1440,18 @@ The default portal will create the <em>user database</em> for a given user the f
 <p>Parameters: <code>name</code>, <code>email</code></p>
 
 <p>Returns:  either {"ok":true} or {"error":"error text"}</p></li>
-<li><p><code>GET /u/user-database.json</code></p>
+<li><p><code>PUT /roles/userdb/{user_database}</code></p>
 
-<p>Creates a user's database.</p>
-
-<p>The user record must contain a <code>user_database</code> field.</p>
+<p>Creates a user's database, if any user is registered to use it.</p>
 
 <p>Returns: either {"ok":true} or {"error":"error text"}</p>
 
-<p>Application note: This API is available to allow a logged-in user to request its own database be created.
-Obviously this can be achieved by a <code>PUT</code> operation on the CouchDB database directly done by a database-administrator account.</p></li>
+<p>Application note:
+This API is available to allow a logged-in user to request its own database be created.
+It might also be used by a third party to create the database as well.</p>
+
+<p>Caveat:
+The API will return {"ok":true} if the database is not assigned to any user (and skip the actual database creation).</p></li>
 <li><p><code>POST /roles/replicate/push/{target}</code></p>
 
 <p>Replicates from the user's database into the main database indicated by <code>target</code>.</p>
@@ -1512,8 +1517,8 @@ Links:
 
 
 <div class="pagedate">
-Last edited <span class="date">Fri Mar 30 13:39:18 2012</span>
-<!-- Created <span class="date">Fri Mar 30 13:39:18 2012</span> -->
+Last edited <span class="date">Mon Apr  2 23:02:42 2012</span>
+<!-- Created <span class="date">Mon Apr  2 23:02:42 2012</span> -->
 </div>
 
 </div>
