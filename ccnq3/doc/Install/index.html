@@ -52,25 +52,33 @@ Install
 <h1>Conventions</h1>
 
 <p>Most commands must be ran as root. The only exception
-would be the gpg commands; in that case make sure you
-run apt-key as root.</p>
+would be the <code>gpg</code> commands; in that case make sure you
+run <code>apt-key</code> as root.</p>
 
 <h1>Requirements</h1>
 
 <p>Your base system should be a current Debian/testing system.
 Other systems might work but are not supported.</p>
 
-<p>Hostnames for the different servers MUST be:
-1. FQDN (e.g. "server.example.com", not "server")
-2. Valid DNS names (that resolve using A and/or AAAA queries)
-These are both required to ensure clients can properly access
+<p>Hostnames for the different servers MUST be:</p>
+
+<ol>
+<li>FQDN (e.g. "server.example.com", not "server")</li>
+<li>Valid DNS names (that resolve using A and/or AAAA queries)</li>
+</ol>
+
+
+<p>These are both required to ensure clients can properly access
 the server.</p>
 
 <h1>Add Repository</h1>
 
-<p>Add
-    deb http://debian.sotelips.net/shimaore shimaore main
-to your existing /etc/apt/sources.list</p>
+<p>Add</p>
+
+<pre><code>deb http://debian.sotelips.net/shimaore shimaore main
+</code></pre>
+
+<p>to your existing /etc/apt/sources.list</p>
 
 <pre><code>REPOSITORY=${REPOSITORY:-debian.sotelips.net}
 tee -a /etc/apt/sources.list &gt; /dev/null &lt;&lt;EOT
@@ -78,8 +86,10 @@ deb http://${REPOSITORY}/shimaore shimaore main
 EOT
 </code></pre>
 
-<p>Alternatively use
-    apt-add-repository "deb http://${REPOSITORY}/shimaore shimaore main"</p>
+<p>Alternatively use</p>
+
+<pre><code>apt-add-repository "deb http://${REPOSITORY}/shimaore shimaore main"
+</code></pre>
 
 <h1>Add Key</h1>
 
@@ -142,16 +152,20 @@ OBykrOCP2xkJXm5KO2biX462aonOBXt1KKWljRamN78QBVpvON8JkSD90pKiDeh1
 GPG
 </code></pre>
 
-<p>Alternatively retrieve the key then add it:
-    MAINTAINER='Stephane Alnet (Packaging) <a href="mailto:stephane@shimaore.net">&#115;&#116;&#101;&#112;&#x68;&#x61;&#110;&#x65;&#x40;&#115;&#104;&#x69;&#x6d;&#x61;&#x6f;&#x72;&#x65;&#x2e;&#x6e;&#x65;&#x74;</a>'
-    gpg --recv-keys "=${MAINTAINER}"
-    gpg --armor --export "=${MAINTAINER}" | apt-key add -</p>
+<p>Alternatively retrieve the key then add it:</p>
+
+<pre><code>MAINTAINER='Stephane Alnet (Packaging) &lt;stephane@shimaore.net&gt;'
+gpg --recv-keys "=${MAINTAINER}"
+gpg --armor --export "=${MAINTAINER}" | apt-key add -
+</code></pre>
 
 <h1>Update System, Install Packages</h1>
 
-<p>Once the above is done, update your system...
-    aptitude update
-    aptitude -y dist-upgrade</p>
+<p>Once the above is done, update your system...</p>
+
+<pre><code>aptitude update
+aptitude -y dist-upgrade
+</code></pre>
 
 <h1>Start Installation</h1>
 
@@ -159,16 +173,21 @@ GPG
 
 <h2>"manager" host</h2>
 
-<p>The first host you will install is your "manager" host.
-    aptitude -y install ccnq3
-    cd /opt/ccnq3/src
-    ./bootstrap-manager.sh</p>
+<p>The first host you will install is your "manager" host.</p>
 
-<p>If you have an existing CouchDB/BigCouch installation, use
-    cd /opt/ccnq3/src
-    export CDB_URI=http://admin:password@host:5984/
-    su -s /bin/bash -c ./bootstrap.sh ccnq3
-instead.</p>
+<pre><code>aptitude -y install ccnq3
+cd /opt/ccnq3/src
+./bootstrap-manager.sh
+</code></pre>
+
+<p>If you have an existing CouchDB/BigCouch installation, use</p>
+
+<pre><code>cd /opt/ccnq3/src
+export CDB_URI=http://admin:password@host:5984/
+su -s /bin/bash -c ./bootstrap.sh ccnq3
+</code></pre>
+
+<p>instead.</p>
 
 <p>Normally you should not run voice services on the manager,
 however if you intend to do so you will need to install
@@ -176,17 +195,23 @@ the ccnq3-voice package as well.</p>
 
 <h2>Other (non-manager) hosts</h2>
 
-<p>On a non-manager host you will use:
-    aptitude install ccnq3-voice
-    URI=http://...
-    cd /opt/ccnq3/src
-    ./bootstrap-local.sh $URI
-where the URI is provided by the provisioning system.</p>
+<p>On a non-manager host you will use:</p>
 
-<p>If you need mediaproxy on that host, you must manually run
-    cd /opt/ccnq3/src/common/mediaproxy
-    ./install.sh
-because of some important caveats regarding IPv6.</p>
+<pre><code>aptitude install ccnq3-voice
+URI=http://...
+cd /opt/ccnq3/src
+./bootstrap-local.sh $URI
+</code></pre>
+
+<p>where the URI is provided by the provisioning system.</p>
+
+<p>If you need mediaproxy on that host, you must manually run</p>
+
+<pre><code>cd /opt/ccnq3/src/common/mediaproxy
+./install.sh
+</code></pre>
+
+<p>because of some important caveats regarding IPv6.</p>
 
 <h2>Installation of <code>ccnq3_dns</code></h2>
 
@@ -194,9 +219,13 @@ because of some important caveats regarding IPv6.</p>
 installed to provide inbound routing for numbers.
 Since it uses port 53 it cannot be installed on any host
 which uses a local DNS resolver or proxy. The host(s) that
-run the service must:
-- use non-local nameservers (in /etc/resolv.conf)
-- forward UDP port 53 to UDP port 53053 (the <code>ccnq3-dns</code> package does this).</p>
+run the service must:</p>
+
+<ul>
+<li>use non-local nameservers (in /etc/resolv.conf)</li>
+<li>forward UDP port 53 to UDP port 53053 (the <code>ccnq3-dns</code> package does this).</li>
+</ul>
+
 
 <p>See <a href="../Provisioning/">Provisioning</a> for more information and follow-up steps.</p>
 
@@ -241,6 +270,8 @@ EOT
 <div id="backlinks">
 Links:
 
+<a href="../Provisioning/">Provisioning</a>
+
 <a href="../">doc</a>
 
 
@@ -252,8 +283,8 @@ Links:
 
 
 <div class="pagedate">
-Last edited <span class="date">Tue Apr  3 10:15:56 2012</span>
-<!-- Created <span class="date">Tue Apr  3 10:15:56 2012</span> -->
+Last edited <span class="date">Tue Apr  3 10:27:35 2012</span>
+<!-- Created <span class="date">Tue Apr  3 10:27:35 2012</span> -->
 </div>
 
 </div>
