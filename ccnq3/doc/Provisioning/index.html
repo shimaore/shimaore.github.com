@@ -1,0 +1,515 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+ "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Provisioning</title>
+
+<link rel="stylesheet" href="../../style.css" type="text/css" />
+
+<link rel="stylesheet" href="../../local.css" type="text/css" />
+
+
+
+
+
+</head>
+<body>
+
+<div class="page">
+
+<div class="pageheader">
+<div class="header">
+<span>
+<span class="parentlinks">
+
+<a href="../../">CCNQ3</a>/ 
+
+<a href="../">doc</a>/ 
+
+</span>
+<span class="title">
+Provisioning
+
+</span>
+</span>
+
+</div>
+
+
+
+
+
+</div>
+
+
+
+<div id="pagebody">
+
+<div id="content">
+<h1>Introduction</h1>
+
+<p>The following steps are currently not automated and might not be
+available in the portal. They must be performed after the steps in
+the "INSTALL" file, which documents how to install the packages and
+bootstrap the installation on the manager server.</p>
+
+<p>It is important that the manager server be accessible to you via its
+hostname (for example by adding a record for it your local /etc/hosts file)
+because the installation scripts cannot guess how you might access it
+(for example via a VPN or SSH port redirection).</p>
+
+<p>Note: Once you will have enabled <code>ccnq3_dns</code> and will be using the DNS
+services provided by the system you should be able to remove the entry
+in your /etc/hosts file, assuming you can get to the host using the
+information available in public DNS.</p>
+
+<h1>Naming conventions in this document</h1>
+
+<p>In this document we will assume that your main domain for installation
+is "phone.example.net". IP Addresses are assigned from a block in RFC5737.</p>
+
+<pre><code>vm1.phone.example.net  198.51.100.51
+vm2.phone.example.net  198.51.100.52
+vm3.phone.example.net  198.51.100.53
+</code></pre>
+
+<p>We will use two SIP domains, "a.phone.example.net" for client-side,
+and "trunk.phone.example.net" for the carrier-side.</p>
+
+<p>Host vm1 will be the manager host; host vm2 will be a client-side server,
+and host vm3 will be a carrier-side server.</p>
+
+<h1>Create a managing user</h1>
+
+<ul>
+<li><p>Check that Futon is running on the server.
+   http://admin:XXXXX@vm1.phone.example.net:8080/_utils</p>
+
+<p>Note: The full URL is provided by the bootstrap-manager script.
+Note: In the default setup you may indifferently use port 8080 or port 5984
+      to access Futon and CouchDB. To access CouchDB programmatically you
+      should use port 5984 to avoid a dependency on the web application.</p></li>
+<li><p>Click the "Logout" button on the Futon interface (in the bottom right
+corner) and refuse to log back in.</p></li>
+<li><p>Register on the web application.
+   http://vm1.phone.example.net:8080/</p></li>
+<li><p>Password will come via email; make sure nullmailer and the upstream
+MTA are able to forward emails.</p>
+
+<p>Note: configure the upstream MTA in /etc/nullmailer/remotes if you haven't
+      done so during the installation the nullmailer package.</p>
+
+<p>After you register,
+use "Recover password" until you receive the notification email.</p></li>
+<li><p>Log into the web application to confirm it is working.</p>
+
+<p>Note: login will fail if you attempt to use e.g. an IP address instead of
+the host name.</p></li>
+<li><p>Logout from the web application.</p></li>
+<li><p>Go back to Futon and log in using the "admin" account.</p>
+
+<p>Important note:
+Make sure you are logged out, first (there is a "Logout" button in the bottom right).
+Refuse to enter your password until you are first logged out.
+(This is because the web application will have you logged in under your own username,
+while you need to use the "admin" account for the following steps.)</p>
+
+<p>Once logged out, log in using the admin account, then add</p>
+
+<p>  access:provisioning:  # Pull provisioning database
+  update:provisioning:  # Push provisioning database
+  update:<em>users:        # Allows to create user records
+  update:</em>users:        # Allows to grant the role (via applications/roles/zappa/admin.coffee)
+  update:host:          # Role to add and modify hosts (servers)
+  update:user_db:       # Allows to grant this role to new "voicemail@" accounts. (Not required if not using voicemail.)
+  access:_users:        # Allows to grant this role to new "voicemail@" accounts. (Not required if not using voicemail.)
+  access:traces:        # Allows to grant the role to users who need to gather sniffer traces</p>
+
+<p>to the "roles" array of your user's record (in the <code>_users</code> database).
+It should look something like this:</p>
+
+<p>  [
+    "confirmed",
+    "access:provisioning:",
+    "update:provisioning:",
+    "update:_users:",
+    "update:host:"
+  ]</p>
+
+<p>("confirmed" is a role added automatically the first time you log in,
+so it should already be present.)</p></li>
+<li><p>Logout of Futon.</p></li>
+</ul>
+
+
+<h1>DNS</h1>
+
+<p>The following step is to enable the <code>ccnq3_dns</code> service, which will provide dedicated
+DNS responses based on your provisioning data.</p>
+
+<h2>Standard DNS layout</h2>
+
+<p>We recommend that most hosts use a locally-installed DNS cache (such as the plain bind9
+package). Their /etc/resolv.conf file should therefor contain:</p>
+
+<pre><code>nameserver 127.0.0.1
+</code></pre>
+
+<p>These hosts will require no further changes related to DNS.</p>
+
+<h2>Hosts running the <code>ccnq3_dns</code> service</h2>
+
+<p>Optimally you should select a pair of servers to run the <code>ccnq3_dns</code> service. These servers
+will not be able to run bind9, so they must rely on (at least two) other servers (preferably
+in the CCNQ3 system) to provide them with DNS service. Their /etc/resolv.conf file should
+therefor contain the IP addresses for these two (or more) servers.</p>
+
+<p>On these servers you should also install the ccnq3-dns package:</p>
+
+<pre><code>aptitude install -q -y ccnq3-dns
+</code></pre>
+
+<h2>Domains to be created</h2>
+
+<p>You must create two records in the provisioning database (using Futon):</p>
+
+<ul>
+<li>one record for the main domain "phone.example.net"</li>
+<li>one record for the subdomain "enum.phone.example.net"</li>
+</ul>
+
+
+<p>These records should be layed out as follows:</p>
+
+<pre><code>{
+  "_id":"domain:phone.example.net",
+  "type":"domain"
+  "domain":"phone.example.net",
+  "records":[
+    {"class":"NS","value":"vm1.phone.example.net"}
+  ]
+}
+
+{
+  "_id":"domain:enum.phone.example.net",
+  "type":"domain",
+  "domain":"enum.phone.example.net",
+  "ttl":60,
+  "ENUM":true,
+  "records":[
+    {"class":"NS","value":"vm1.phone.example.net"}
+  ]
+}
+</code></pre>
+
+<p>Notes:
+* Any host with applications/dns running should be listed as NS.
+* No account field, so these records won't be picked-up for replication.</p>
+
+<h1>Adding a new "voice" host</h1>
+
+<ul>
+<li>Install the "ccnq3-voice" package on the host.</li>
+<li>Log into the web application and go to Provisioning/New host;</li>
+<li>Add a record for one host, e.g. vm2.phone.example.net</li>
+<li>Enter the appropriate IP addresses, enter a SIP domain (cluster domain).</li>
+<li>Select the proper applications for the host.</li>
+<li><p>Submit.</p></li>
+<li><p>Click on the new record to open it, copy the "bootstrap" command.</p></li>
+<li><p>Logout from the portal.</p></li>
+<li><p>Go back to the admin login for Futon;
+(make sure you are logged out first -- use the Logout button)</p></li>
+<li><p>In the database "provisioning" locate the new host's record and
+modify or add the following fields:</p>
+
+<p>  opensips:
+    {
+      "model": "complete"
+    }
+  traces:
+    {
+      "interfaces": [
+        "eth0",
+        "eth1"
+      ]
+    }</p></li>
+<li><p>Then log into the host and run:</p>
+
+<p>  cd /opt/ccnq3/src/
+  URI=   # URL from the provisioning portal (above).
+  sudo ./bootstrap-local.sh $URI
+  # Just to make sure, restart ccnq3
+  sudo /etc/init.d/ccnq3 restart
+  # Normally freeswitch and opensips are still not running.
+  sudo /etc/init.d/opensips start
+  sudo /etc/init.d/freeswitch start</p></li>
+<li><p>Currently all FreeSwitch changes can be triggered from CouchDB
+(using the appropriate <code>sip_commands</code> if needed) or (which is
+equivalent) from the web portal.</p>
+
+<p>OpenSIPS configuration changes require a restart of OpenSIPS
+(but there are only a few parameters that would require this).</p></li>
+<li><p>Add a registering endpoint record to test the new setup.</p>
+
+<p> Register Usermame: 0976543210@a.phone.example.net
+ Register Password: XXXX
+ Account: test
+ Location: home
+ Outbound Route: 1</p></li>
+<li><p>Test registration.</p></li>
+</ul>
+
+
+<h1>Finishing configuring the hosts</h1>
+
+<ul>
+<li><p>Here are example records for the "client-sbc" host and the "carrier-side sbc" host.</p>
+
+<p>  /<em> This host is a "client sbc" in cluster "a.phone.example.net". </em>/
+  /<em> "ingress_acl" should contain the IP addresses of the carrier-side SBCs. </em>/</p>
+
+<p>  {
+    "_id":"host:vm2.phone.example.net",
+    "type":"host",
+    "host":"vm2.phone.example.net",
+    "provisioning": ....,
+    "password":"XXXX",
+    "interfaces": ....,
+    "account":"",
+    "mailer":{},
+    "applications":["applications/host","applications/freeswitch","applications/opensips","applications/traces"],
+    "traces":{"interfaces":["eth0","eth1"]},</p>
+
+<pre><code>"sip_domain_name":"a.phone.example.net",
+"opensips":{"model":"complete"},
+"sip_profiles":{
+  "test":{
+    "template":"sbc-nomedia",
+    "ingress_sip_ip":"198.51.100.52",
+    "ingress_sip_port":5200,
+    "ingress_acl":["198.51.100.53/32"],
+    "egress_acl":[198.51.100.52/32"],
+    "handler":"client-sbc",
+    "type":"france",
+    "send_call_to":"bridge",
+    "ingress_target":"a.phone.example.net",
+    "egress_target":"trunk.phone.example.net",
+    "egress_gwid":1
+  }
+}
+</code></pre>
+
+<p>  }</p>
+
+<p>  /<em> This host is a "carrier-side sbc" in cluster "trunk.phone.example.net". </em>/</p>
+
+<p>  {
+    "_id":"host:vm3.phone.example.net",
+    "type":"host",
+    "host":"vm3.phone.example.net",
+    "provisioning": ...,
+    "password":"XXXX",
+    "interfaces": ...,
+    "account":"",
+    "mailer":{},
+    "applications":["applications/host","applications/dns","applications/freeswitch","applications/opensips","applications/traces"],</p>
+
+<pre><code>"sip_domain_name":"trunk.phone.example.net",
+"opensips":{"model":"outbound-proxy"},
+"sip_profiles":{
+  "sotel":{
+    "template":"sbc-nomedia",
+    "ingress_sip_ip":"198.51.100.53",
+    "ingress_sip_port":5200,
+    "ingress_acl":["4.53.160.135/32","4.53.160.136/32"],
+    "egress_acl":["198.51.100.52/32"],
+    "handler":"sotel",
+    "send_call_to":"bridge",
+    "egress_target":"termination2.sotelips.net",
+    "enum_root":"enum.phone.example.net",
+    "egress_gwid":100
+  }
+}
+</code></pre>
+
+<p>  }</p></li>
+<li><p>To apply the changes:
+Logout of Futon, login to the portal,
+open the host record and select "reload sofia",
+submit, re-open the host record ("No FreeSwitch changes" should be selected)
+and re-submit.</p></li>
+<li><p>You'll also need an endpoint to identify the client-sbc with the
+carrier-side proxy.</p>
+
+<p>  {
+    "_id":"endpoint:198.51.100.52",
+    "type":"endpoint",
+    "endpoint":"198.51.100.52",
+    "sbc":2,
+    "outbound_route":1
+  }</p></li>
+<li><p>Configure OpenSIPS routing:</p></li>
+</ul>
+
+
+<p>The groupid should match the <code>outbound_route</code> for the endpoints.
+The ruleid is a random/incremental field used to manage the records.</p>
+
+<ul>
+<li><p>Add rule records</p>
+
+<p>/<em> routes from the client-side OpenSIPS to the client-side FreeSwitch </em>/
+/<em> Mostly used to allow/deny destinations. </em>/</p>
+
+<p> {
+  "_id":"rule:vm2.phone.example.net:1",
+  "account":"",
+  "type":"rule",
+  "host":"vm2.phone.example.net",
+  "ruleid":1,</p>
+
+<p>  "groupid":1,
+  "prefix":"",
+  "timerec":"",
+  "priority":1,
+  "gwlist":"1",
+  "routeid":0,
+  "attrs":""
+}</p>
+
+<p>/<em> routes from the carrier-side OpenSIPS to the carrier-side FreeSwitch </em>/
+/<em> Used for LCR routing. </em>/</p>
+
+<p>{
+  "_id":"rule:vm3.phone.example.net:1",
+  "type":"rule",
+  "rule":"vm3.phone.example.net:1",
+  "host":"vm3.phone.example.net",
+  "ruleid":1,</p>
+
+<p>  "groupid":1,
+  "prefix":"",
+  "timerec":"",
+  "priority":1,
+  "gwlist":"100",
+  "routeid":0,
+  "attrs":""
+}</p></li>
+<li><p>Send "reload routes" command (in the portal)</p></li>
+</ul>
+
+
+<h1>End-user data</h1>
+
+<p>Here are some provisioning records as examples.</p>
+
+<h2>Endpoint</h2>
+
+<p>See above for a complete example.</p>
+
+<h2>Number</h2>
+
+<p>There are two types of "number" records. Both types must be provisioned for
+a number to be fully provisioned.</p>
+
+<p>Unqualified (global) number records are used by the carrier-side SBCs to
+know which cluster will handle an incoming number.
+These "number" records populate Carrier ENUM for inbound routing and CDR
+generation.
+The number is expressed in E.164 format without a "+" sign.</p>
+
+<pre><code>{
+  "_id":"number:33976543210",
+  "number":"33976543210",
+  "type":"number",
+
+  "account":"stephane",
+  "inbound_uri":"sip:33976543210@ingress-test.a.phone.example.net"
+}
+</code></pre>
+
+<p>Qualified (local) number records are used by a client-side SBC to
+know which endpoint will handle an incoming number.
+They may also contain additional information such as the location of that
+specific number (for the purpose of emergency call routing).
+Since the default value for OpenSIPS' <code>number_domain</code> is <code>local</code>, the
+name after the @ sign will generally be <code>local</code>.</p>
+
+<pre><code>{
+  "_id":"number:0976543210@local",
+  "type":"number",
+  "number":"0976543210@local",
+
+  "endpoint":"0976543210@a.phone.example.net",
+  "location":"maison"
+}
+</code></pre>
+
+<h2>Location</h2>
+
+<p>Used for emergency call routing.</p>
+
+<pre><code>{
+    "_id":"location:maison",
+    "type":"location",
+    "location":"maison",
+
+    "account":"",
+    "routing_data":"29789"
+}
+</code></pre>
+
+<h1>Further Reading</h1>
+
+<p>This document is meant to help you bootstrap your provisioning.</p>
+
+<p>A complete provisioning documentation is available in <a href="../data-dictionary/">data-dictionary</a>.</p>
+
+</div>
+
+
+
+
+
+</div>
+
+<div id="footer" class="pagefooter">
+
+<div id="pageinfo">
+
+
+
+
+<div id="backlinks">
+Links:
+
+<a href="../Install/">Install</a>
+
+<a href="../">doc</a>
+
+
+</div>
+
+
+
+
+
+
+<div class="pagedate">
+Last edited <span class="date">Tue Apr  3 10:16:27 2012</span>
+<!-- Created <span class="date">Tue Apr  3 10:16:27 2012</span> -->
+</div>
+
+</div>
+
+
+<!-- from CCNQ3 -->
+</div>
+
+</div>
+
+</body>
+</html>
