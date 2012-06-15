@@ -15,6 +15,7 @@
 
 
 
+
 </head>
 <body>
 
@@ -35,6 +36,8 @@ shortcuts
 </span>
 
 </div>
+
+
 
 
 
@@ -64,7 +67,7 @@ Check the [[!cia  ikiwiki desc="CIA page for %s"]].
 <li>shortcut archive points to <i>http://web.archive.org/*/%S</i></li>
 <li>shortcut gmap points to <i>https://maps.google.com/maps?q=%s</i></li>
 <li>shortcut gmsg points to <i>https://groups.google.com/groups?selm=%s</i></li>
-<li>shortcut wikipedia points to <i>https://en.wikipedia.org/wiki/%s</i></li>
+<li>shortcut wikipedia points to <i>https://en.wikipedia.org/wiki/%W</i></li>
 <li>shortcut wikitravel points to <i>https://wikitravel.org/en/%s</i></li>
 <li>shortcut wiktionary points to <i>https://en.wiktionary.org/wiki/%s</i></li>
 <li>shortcut debbug points to <i>http://bugs.debian.org/%S</i></li>
@@ -124,8 +127,10 @@ Check the [[!cia  ikiwiki desc="CIA page for %s"]].
 <p>To add a new shortcut, use the <code>shortcut</code>
 <a href="../ikiwiki/directive/">directive</a>. In the url, "%s" is replaced with the
 text passed to the named shortcut, after <a href="https://en.wikipedia.org/wiki/url%5Fencoding">url encoding</a>
-it, and '%S' is replaced with the raw, non-encoded text. The optional
-<code>desc</code> parameter controls the description of the link.</p>
+it, and '%S' is replaced with the raw, non-encoded text.
+Additionally, <code>%W</code> is replaced with the text encoded just right for
+Wikipedia. The optional <code>desc</code> parameter controls the description of
+the link.</p>
 
 <p>Remember that the <code>name</code> you give the shortcut will become a new
 <a href="../ikiwiki/directive/">directive</a>.  Avoid using a <code>name</code> that conflicts
@@ -152,6 +157,8 @@ ikiwiki will include your shortcut in the standard underlay.</p>
 
 
 
+
+
 <div id="backlinks">
 Links:
 
@@ -166,8 +173,8 @@ Links:
 
 
 <div class="pagedate">
-Last edited <span class="date">Wed Jan 25 09:55:25 2012</span>
-<!-- Created <span class="date">Wed Jan 25 09:55:25 2012</span> -->
+Last edited <span class="date">Sat 03 Mar 2012 04:27:59 PM CET</span>
+<!-- Created <span class="date">Sat 03 Mar 2012 04:27:59 PM CET</span> -->
 </div>
 
 </div>

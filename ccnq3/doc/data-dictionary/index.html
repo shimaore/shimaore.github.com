@@ -15,6 +15,7 @@
 
 
 
+
 </head>
 <body>
 
@@ -37,6 +38,8 @@ data-dictionary
 </span>
 
 </div>
+
+
 
 
 
@@ -77,6 +80,167 @@ a carrier/reseller/customer model.</p>
 <p>The account "" (the empty string), located at the root of the hierarchy, can be
 used to restrict access to provisioning data that should only be managed by
 system administrators. It is used in this manner in the following documentation.</p>
+
+<h1>Applications</h1>
+
+<p>Applications are modules inside the CCNQ3 system which may be added or removed on a server after installation of the Debian packages.
+Each application may come with database updates, new local processes, and sometimes offer remotely-accessible services.</p>
+
+<p>In a template CCNQ3 system, you would typically have two types of servers, <em>manager</em> servers and <em>call-processing</em> servers.
+A manager server would typically have the <code>ccnq3</code> package installed, and run the following applications:</p>
+
+<pre><code># Core database management
+applications/usercode
+applications/provisioning
+# Portal
+applications/roles
+applications/portal
+applications/inbox
+public
+applications/web
+# Aggregation
+applications/cdrs
+applications/locations
+</code></pre>
+
+<p>A call-processing server would typically have the <code>ccnq3-voice</code> package installed, and run the following applications:</p>
+
+<pre><code># Applications for a server running ccnq3-voice
+applications/freeswitch
+applications/opensips
+applications/traces
+# Additional applications for a server running FreeSwitch
+applications/voicemail
+# Additional applications for a server running OpenSIPS
+applications/registrant
+applications/emergency
+</code></pre>
+
+<p>Finally, at least two servers (for redundancy purposes) must have the <code>ccnq3-dns</code> package installed, and run the following application:</p>
+
+<pre><code>application/dns
+</code></pre>
+
+<p>Moreover all servers, regardless of intended purpose, must run the following application:</p>
+
+<pre><code>application/host
+</code></pre>
+
+<p>Some of these applications are automatically installed. For example, a <code>manager</code> host (created using the <code>bootstrap-manager</code> script) will have most services enabled except the aggregation services. Removing automatically-installed applications in this case will lead to loss of functionality or breakage.</p>
+
+<p>You may add or remove applications using the web portal.
+However at this time the portal does not allow for application-specific parameters to be configured; this must be done manually in the CouchDB provisioning database.</p>
+
+<p>After adding or removing one or more applications on a given host, you must run</p>
+
+<pre><code>aptitude reinstall ccnq3
+</code></pre>
+
+<p>on that host to ensure that the proper dependencies are updated.
+This operation will in most cases lead to loss of calls on call-processing servers.</p>
+
+<p>The following applications are available:</p>
+
+<h2>applications/host</h2>
+
+<p>The base host support application.</p>
+
+<p>Install on: all servers.</p>
+
+<p>Required: yes.</p>
+
+<h2>applications/usercode</h2>
+
+<p>Support for applications in users' databases.</p>
+
+<p>Install on: the portal server.</p>
+
+<h2>applications/provisioning</h2>
+
+<p>Support for provisioning.
+Install on: the portal server.</p>
+
+<h2>applications/roles</h2>
+
+<p>Support for role-based authorization in the portal.
+Install on: the portal server.</p>
+
+<h2>applications/portal</h2>
+
+<p>Portal registration and login.
+Install on: the portal server.</p>
+
+<h2>applications/inbox</h2>
+
+<p>The portal inbox.
+Install on: the portal server.</p>
+
+<h2>application/web</h2>
+
+<p>Web reverse proxy and static web server.
+Install on: the portal server.</p>
+
+<h2>applications/cdrs</h2>
+
+<p>A CDR aggregation application.</p>
+
+<p>Install on: the server that will aggregate the CDRs.</p>
+
+<h2>applications/locations</h2>
+
+<p>Registered endpoints location aggregation.
+Install on: the server that will aggregate the data.</p>
+
+<h2>applications/dns</h2>
+
+<p>A database-driven DNS server.</p>
+
+<p>Install on: a server running the ccnq3-dns package.</p>
+
+<h2>applications/freeswitch</h2>
+
+<p>FreeSwitch support application.
+Install on: any server running FreeSwitch.</p>
+
+<h2>applications/opensips</h2>
+
+<p>OpenSIPS support application.
+Install on: any server running OpenSIPS.</p>
+
+<h2>applications/traces</h2>
+
+<p>Support for portal access to local traces.
+Install on: servers with the ccnq3-traces package, typically OpenSIPS and FreeSwitch hosts.</p>
+
+<h2>applications/voicemail</h2>
+
+<p>FreeSwitch support for voicemail.
+Install on: a FreeSwitch server that will provide voicemail.</p>
+
+<h2>applications/prepaid (unstable)</h2>
+
+<p>FreeSwitch support for prepaid.
+Install on: a FreeSwitch server that will provide prepaid services.</p>
+
+<p>Currently untested and needs to be rewritten.</p>
+
+<h2>applications/cnam-client (unstable)</h2>
+
+<p>A CNAM client application.</p>
+
+<p>Install on: a server running FreeSwitch client-side.</p>
+
+<h2>applications/registrant</h2>
+
+<p>OpenSIPS server providing batch registration to an upstream server.</p>
+
+<p>Install on: a server running OpenSIPS; will start a separate OpenSIPS instance for client registration.</p>
+
+<h2>applications/emergency</h2>
+
+<p>An emergency call routing server.</p>
+
+<p>Install on: a server running OpenSIPS; will start a separate OpenSIPS instance for 302 emergency calls redirection.</p>
 
 <h1>provisioning database</h1>
 
@@ -272,6 +436,7 @@ SRV records for these services. This is also used by applications/opensips
 to create gateway entries for the egress_gwid in those domains/clusters.
 Finally, this is the domain name accepted by OpenSIPS servers in that cluster.</p></li>
 <li><p><code>rtp_ip</code>: local IP to bind to for RTP [default: "auto"]</p></li>
+<li><code>cdr_uri</code>: URI where the local CDRs should be written to [default: "http://127.0.0.1:5984/cdr"]</li>
 <li><code>cdr_aggregate_uri</code>: URI where the local CDRs should be replicated to [no default]
   Note: must contain authentication (for the local host).</li>
 <li><p><code>sip_profiles</code>: {} of profiles descriptions:</p>
@@ -722,6 +887,19 @@ on the source host, set "opensips_proxy.usrloc_aggregate_uri" to http://host%40s
 </ul>
 
 
+<h3>Specific to hosts running the CNAM-client</h3>
+
+<ul>
+<li><code>cnam_client</code>:
+
+<ul>
+<li><code>port</code>    FreeSwitch ESL <code>socket</code> port [default: 7124]</li>
+<li><code>uri</code>     URI to query</li>
+</ul>
+</li>
+</ul>
+
+
 <h3>Attachments</h3>
 
 <p>Attachments of type "application/javascript" are executed after each change.
@@ -845,7 +1023,27 @@ an OpenSIPS server will accept any domain listed here.
 <li><p><code>dst_disabled</code>    boolean If true, calls towards this endpoint are blocked</p></li>
 <li><p><code>strip_digit</code>     boolean If true, remove the first digit of the destination username</p></li>
 <li><p><code>user_force_mp</code>   boolean If true, attempt to force media_proxy insertion</p></li>
-<li><p><code>user_srv</code>        string  Final user's domain (compatible with user_via)</p></li>
+<li><p><code>user_srv</code>        string  Final user's domain (compatible with user_via)</p>
+
+<p>Design note: a valid design to allow for easy migration of customers IP addresses
+is to have:</p>
+
+<ul>
+<li>one endpoint with an identifier (not an IP address nor a <code>username@domain</code>)
+which is used to route inbound calls; that endpoint uses the <code>user_srv</code> field
+to terminate the calls on the proper customer system;</li>
+<li>one or more endpoints (using IP addresses as identifiers) to allow these
+IP addresses to route outbound calls.</li>
+</ul>
+
+
+<p>With this design a customer can migrate IP addresses temporarily or permanently by:</p>
+
+<ul>
+<li>adding or removing the IP addresses (used for outbound calls)</li>
+<li>updating the <code>user_srv</code> field of the endpoint used for inbound calls.</li>
+</ul>
+</li>
 <li><p><code>user_via</code>        string  If present, calls are routed via this SBC</p>
 
 <p>Usage note: This requires a type of SBC which has not yet been ported to ccnq3.</p></li>
@@ -1503,6 +1701,8 @@ The API will return {"ok":true} if the database is not assigned to any user (and
 
 
 
+
+
 <div id="backlinks">
 Links:
 
@@ -1519,8 +1719,8 @@ Links:
 
 
 <div class="pagedate">
-Last edited <span class="date">Mon Apr  2 23:02:42 2012</span>
-<!-- Created <span class="date">Mon Apr  2 23:02:42 2012</span> -->
+Last edited <span class="date">Wed 25 Apr 2012 03:54:50 PM CEST</span>
+<!-- Created <span class="date">Wed 25 Apr 2012 03:54:50 PM CEST</span> -->
 </div>
 
 </div>

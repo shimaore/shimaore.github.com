@@ -275,6 +275,7 @@ div.progress-done {
 @media print {
 	.actions { display: none; }
 	.tags { display: none; }
+	.trails { display: none; }
 	.feedbutton { display: none; }
 	#searchform { display: none; }
 	.blogform, #blogform { display: none; }
@@ -501,6 +502,45 @@ a.openid_large_btn:focus {
 .fileupload-content .ui-progressbar-value {
 	background: url(ikiwiki/images/pbar-ani.gif);
 }
+
+.trails {
+	margin-top: 1em;
+	margin-bottom: 1em;
+}
+.trail {
+	display: block;
+	clear: both;
+	position: relative;
+}
+
+.trailprev {
+	display: block;
+	text-align: left;
+	position: absolute;
+	top: 0%;
+	left: 3%;
+	width: 30%;
+}
+
+.trailup {
+	display: block;
+	text-align: center;
+	margin-left: 35%;
+	margin-right: 35%;
+}
+
+.trailnext {
+	display: block;
+	text-align: right;
+	position: absolute;
+	top: 0%;
+	width: 30%;
+	right: 3%;
+}
+
+.trailsep {
+	display: none;
+}
 /*    bzed theme for ikiwiki
  *
  *    Copyright (C) 2010 Bernd Zeimetz
@@ -700,14 +740,15 @@ body {
 	font-weight: bold;
 }
 
-.pageheader .header .title, .pageheader .header .parentlinks, .pageheader .actions ul li, .pageheader .header span, .pageheader #otherlanguages ul li {
+.pageheader .header .title, .pageheader .header .parentlinks, .pageheader .actions ul li, .pageheader .header span, .pageheader #otherlanguages ul li, .pageheader .trailprev, .pageheader .trailnext, .pageheader .trailup {
 	padding: 0.25em 0.25em 0.25em 0.25em;
 	background-image: url('background_darkness.png');
 	background-repeat: repeat;
 	color: white;
 }
 
-.pageheader .header span a, .pageheader .actions ul li a, .pageheader .header .parentlinks a, .pageheader #otherlanguages ul li a {
+.pageheader .header span a, .pageheader .actions ul li a, .pageheader .header .parentlinks a, .pageheader #otherlanguages ul li a, .pageheader a, .pageheader .trail a {
+	font-weight: bold;
 	color: white;
 	text-decoration: none;
 }

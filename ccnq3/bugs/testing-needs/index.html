@@ -5,7 +5,7 @@
 <head>
 
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<title>sip-headers</title>
+<title>testing-needs</title>
 
 <link rel="stylesheet" href="../../style.css" type="text/css" />
 
@@ -28,11 +28,11 @@
 
 <a href="../../">CCNQ3</a>/ 
 
-<a href="../">doc</a>/ 
+<a href="../">bugs</a>/ 
 
 </span>
 <span class="title">
-sip-headers
+testing-needs
 
 </span>
 </span>
@@ -52,18 +52,13 @@ sip-headers
 <div id="pagebody">
 
 <div id="content">
-<p>Besides standard SIP headers, the following headers are specific to the system:</p>
+<p>Do some testing with
+   http://code.google.com/p/sipvicious/source/browse/trunk/svwar.py
+(also look into http://blog.sipvicious.org/ for other ideas)
+to see which mitigation strategies are best.</p>
 
-<p>P-Charge-Info (per draft-york-sipping-p-charge-info)
-  The username part of the SIP URI is used as the "account".</p>
-
-<p>X-CCNQ3-Location
-  Proprietary header storing a location's identifier.
-  (Received by an outbound-proxy.)</p>
-
-<p>X-CCNQ3-Routing
-  Proprietary header storing emergency routing data.
-  Set by an outbound-proxy, available to an outbound carrier-sbc.</p>
+<p>This is also a strong argument for having OpenSIPS as the choke server
+even if having FreeSwitch directly on the frontline would seem OK.</p>
 
 </div>
 
@@ -88,8 +83,8 @@ sip-headers
 
 
 <div class="pagedate">
-Last edited <span class="date">Thu 05 Jan 2012 01:40:47 AM CET</span>
-<!-- Created <span class="date">Thu 05 Jan 2012 01:40:47 AM CET</span> -->
+Last edited <span class="date">Tue 08 Feb 2011 01:40:06 AM CET</span>
+<!-- Created <span class="date">Tue 08 Feb 2011 01:40:06 AM CET</span> -->
 </div>
 
 </div>

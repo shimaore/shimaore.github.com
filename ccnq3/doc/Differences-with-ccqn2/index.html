@@ -1,0 +1,125 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+ "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Differences-with-ccqn2</title>
+
+<link rel="stylesheet" href="../../style.css" type="text/css" />
+
+<link rel="stylesheet" href="../../local.css" type="text/css" />
+
+
+
+
+
+
+</head>
+<body>
+
+<div class="page">
+
+<div class="pageheader">
+<div class="header">
+<span>
+<span class="parentlinks">
+
+<a href="../../">CCNQ3</a>/ 
+
+<a href="../">doc</a>/ 
+
+</span>
+<span class="title">
+Differences-with-ccqn2
+
+</span>
+</span>
+
+</div>
+
+
+
+
+
+
+
+</div>
+
+
+
+<div id="pagebody">
+
+<div id="content">
+<p>In ccnq3 the system architecture is different:</p>
+
+<ul>
+<li><p>CDR collection is only done at the ingress and egress carrier SBCs.</p></li>
+<li><p>The inbound-proxy is gone.</p></li>
+<li><p>An ingress carrier SBC will locate the number and retrieve the account number (for CDR).
+It might route the call directly to a customer domain, or to this operator's call-handling machines.</p></li>
+<li><p>An egress carrier SBC will use the account number (reject the call otherwise) and create the CDR.</p></li>
+<li><p>The outbound-proxy is used for LCR; it authenticates "trusted" senders which must provide it with account information.
+Each originating host will be allowed to provide account information based on one or more prefixes.</p>
+
+<p>This will allow third-party billing, having savvy customers (say, wholesale or multi-tenant systems) dial directly into the outbound-proxy (over the Internet).
+(No features are provided by the outbound-proxy / egress SBC pair, and numbering format must be adhered to, including for emergency calling.)</p>
+
+<p>LCR group selection based (e.g.) on domain used. -- allows for fax-capable routing, etc.
+However must make sure that selected group is available to account (issues with post-paid rating).</p></li>
+<li><p>The customer-side system is independent and can provide SIP virtual hosting (i.e. accepts other domains than the operator's internal customer domain).
+If needed it will perform CNAM query (and update both From and PID information).
+No CDRs are collected there.
+Therefor it accepts ingress calls from an ingress SBC just like it would accept ingress calls from any Internet host.
+Conversely, it "authenticates" with an egress SBC (via IP address) and forwards appropriate call settlement information.</p>
+
+<p>LCR table is used to eventually provide other information (e.g. call rates references) in the description field. (Well, at least having the prefix used for routing available in the customer SBC would help a lot.)
+Need to be able to pass intra/inter-state information accross to the outbound-proxy (e.g. in domain name).</p>
+
+<p>Outbound, always query internal ENUM (for our own numbers) and if applicable public ENUM (per account flag).</p></li>
+<li><p>The XMPP bus is gone.
+Most functions of the XMPP bus will be replaced by using the CouchDB <em>changes interface. System configuration will either be done via </em>changes triggers, or direct access to CouchDB for information.
+The API interface is gone. Data is directly stored in CouchDB, update validation is used to reject invalid data.
+The portal will mostly be implemented as couchapps.
+RabbitMQ may be used but this hasn't been finalized yet.</p></li>
+</ul>
+
+
+</div>
+
+
+
+
+
+</div>
+
+<div id="footer" class="pagefooter">
+
+<div id="pageinfo">
+
+
+
+
+
+
+
+
+
+
+
+<div class="pagedate">
+Last edited <span class="date">Sat 12 May 2012 10:10:34 PM CEST</span>
+<!-- Created <span class="date">Sat 12 May 2012 10:10:34 PM CEST</span> -->
+</div>
+
+</div>
+
+
+<!-- from CCNQ3 -->
+</div>
+
+</div>
+
+</body>
+</html>
